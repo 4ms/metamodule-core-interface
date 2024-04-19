@@ -41,6 +41,9 @@ struct BaseElement {
 	std::string_view short_name;
 	std::string_view long_name;
 
+	float width_mm = 0;
+	float height_mm = 0;
+
 	static constexpr size_t NumParams = 0;
 	static constexpr size_t NumLights = 0;
 	static constexpr size_t NumInputs = 0;
