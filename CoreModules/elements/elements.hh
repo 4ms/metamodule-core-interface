@@ -12,6 +12,8 @@ namespace MetaModule
 // - Unique set of values or method of interpreting values (e.g. Momentary vs Latched buttons)
 
 using Element = std::variant<NullElement,
+							 ImageElement,
+							 ParamElement,
 
 							 Knob,
 							 Slider,
