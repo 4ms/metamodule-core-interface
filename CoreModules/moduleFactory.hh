@@ -21,9 +21,20 @@ public:
 								   const ModuleInfoView &info,
 								   std::string_view faceplate_filename);
 
-	static bool registerModuleInfo(const ModuleTypeSlug &typeslug, const ModuleInfoView &info);
-	static bool registerModuleCreationFunc(const ModuleTypeSlug &typeslug, CreateModuleFunc funcCreate);
-	static bool registerModuleFaceplate(const ModuleTypeSlug &typeslug, std::string_view filename);
+	static bool registerModuleType(std::string_view brand_name,
+								   const ModuleTypeSlug &typeslug,
+								   CreateModuleFunc funcCreate,
+								   const ModuleInfoView &info,
+								   std::string_view faceplate_filename);
+
+	static bool registerModuleInfo(std::string_view brand_name,
+								   const ModuleTypeSlug &typeslug,
+								   const ModuleInfoView &info,
+								   std::string_view faceplate);
+
+	static bool registerModuleCreationFunc(std::string_view brand_name,
+										   const ModuleTypeSlug &typeslug,
+										   CreateModuleFunc funcCreate);
 
 	static std::unique_ptr<CoreProcessor> create(const ModuleTypeSlug &typeslug);
 
