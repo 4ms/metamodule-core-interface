@@ -62,6 +62,7 @@ struct NullElement : BaseElement {};
 // ParamElement: base class for pot, encoder, switch/button
 struct ParamElement : ImageElement {
 	static constexpr size_t NumParams = 1;
+	static constexpr float DefaultValue = 0;
 };
 
 // Pots (Knobs, Sliders)
@@ -113,14 +114,15 @@ struct LatchingButton : Button {
 //
 // Switches
 //
-struct Switch : ParamElement {};
+struct Switch : ParamElement {
+	using State_t = unsigned;
+	unsigned num_pos = 3;
+	State_t DefaultValue = 0;
+};
 
 // FlipSwitch has up to 3 frames
 // Frame n is drawn to indicate value == n/(num_pos-1)
 struct FlipSwitch : Switch {
-	using State_t = unsigned;
-	unsigned num_pos = 3;
-	State_t DefaultValue = 0;
 	std::array<std::string_view, 3> frames{};
 	std::array<std::string_view, 3> pos_names{"0", "1", "2"};
 };
@@ -128,9 +130,6 @@ struct FlipSwitch : Switch {
 // SlideSwitch has a bg (body) image and a fg (handle) image
 // The handle is drawn at evenly spaced positions to indicate the switch's value
 struct SlideSwitch : Switch {
-	using State_t = unsigned;
-	State_t num_pos = 2;
-	State_t DefaultValue = 0;
 	std::string_view image_handle = "";
 	enum class Ascend { UpLeft, DownRight } direction = Ascend::DownRight;
 	std::array<std::string_view, 8> pos_names{};
