@@ -62,7 +62,6 @@ struct NullElement : BaseElement {};
 // ParamElement: base class for pot, encoder, switch/button
 struct ParamElement : ImageElement {
 	static constexpr size_t NumParams = 1;
-	static constexpr float DefaultValue = 0;
 };
 
 // Pots (Knobs, Sliders)
@@ -88,7 +87,7 @@ struct SliderLight : Slider {
 struct Button : ParamElement {};
 
 struct MomentaryButton : Button {
-	enum class State_t { PRESSED, RELEASED };
+	enum class State_t { RELEASED, PRESSED };
 	std::string_view pressed_image = "";
 	static constexpr State_t DefaultValue = State_t::RELEASED;
 };
@@ -105,8 +104,8 @@ struct MomentaryButtonLight : MomentaryButton {
 // It's drawn with a single frame, and the color is applied as a filled circle,
 // whose alpha value equals the LED value
 struct LatchingButton : Button {
-	enum class State_t { DOWN, UP };
-	static constexpr State_t DefaultValue = State_t::UP;
+	enum class State_t { UP, DOWN };
+	State_t DefaultValue = State_t::UP;
 	static constexpr size_t NumLights = 1;
 	RGB565 color = Colors565::White;
 };
@@ -121,7 +120,7 @@ struct Switch : ParamElement {};
 struct FlipSwitch : Switch {
 	using State_t = unsigned;
 	unsigned num_pos = 3;
-	static constexpr State_t DefaultValue = 0;
+	State_t DefaultValue = 0;
 	std::array<std::string_view, 3> frames{};
 	std::array<std::string_view, 3> pos_names{"0", "1", "2"};
 };
@@ -131,7 +130,7 @@ struct FlipSwitch : Switch {
 struct SlideSwitch : Switch {
 	using State_t = unsigned;
 	State_t num_pos = 2;
-	static constexpr State_t DefaultValue = 0;
+	State_t DefaultValue = 0;
 	std::string_view image_handle = "";
 	enum class Ascend { UpLeft, DownRight } direction = Ascend::DownRight;
 	std::array<std::string_view, 8> pos_names{};
@@ -190,7 +189,7 @@ struct AltParamContinuous : AltParamElement {
 struct AltParamChoice : AltParamElement {
 	using State_t = unsigned;
 
-	unsigned num_pos;
+	unsigned num_pos = 2;
 	State_t DefaultValue = 0;
 };
 
