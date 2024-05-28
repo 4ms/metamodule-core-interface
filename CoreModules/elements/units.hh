@@ -30,7 +30,7 @@ static constexpr float mm_to_px(float mm, uint32_t pixels_per_3U) {
 
 template<size_t DPI = 75>
 static constexpr float PNGpx_to_SVGpx(float px) {
-	return px / 240.f * 5.059 * DPI;
+	return px / 240.f * 5.059f * DPI;
 }
 
 } // namespace MetaModule
