@@ -30,6 +30,19 @@ constexpr LatchingButton::State_t convertState(const T &, float val) requires(st
 }
 
 template<typename T>
+constexpr FlipSwitch::State_t convertState(const T &element, float val) requires(std::derived_from<T, FlipSwitch>)
+{
+	return std::round(val * (float)(element.num_pos - 1));
+}
+
+template<typename T>
+constexpr SlideSwitch::State_t convertState(const T &element, float val) requires(std::derived_from<T, SlideSwitch>)
+{
+	//maps 0..1 -> 1..N
+	return SlideSwitch::State_t(1 + std::round(val * (float)(element.num_pos - 1)));
+}
+
+template<typename T>
 constexpr Pot::State_t convertState(const T &, float val) requires(std::derived_from<T, Pot>)
 {
 	return val;
