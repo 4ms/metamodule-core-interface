@@ -15,6 +15,10 @@ using Element = std::variant<NullElement,
 							 ImageElement,
 							 ParamElement,
 
+							 AltParamContinuous,
+							 AltParamChoice,
+							 AltParamChoiceLabeled,
+
 							 Knob,
 							 Slider,
 							 SliderLight,
@@ -28,9 +32,6 @@ using Element = std::variant<NullElement,
 
 							 LatchingButton,
 
-							 Encoder,
-							 EncoderRGB,
-
 							 JackInput,
 							 JackOutput,
 
@@ -39,10 +40,10 @@ using Element = std::variant<NullElement,
 							 RgbLight,
 
 							 Display, //TODO
+							 Encoder,
+							 EncoderRGB
 
-							 AltParamContinuous,
-							 AltParamChoice,
-							 AltParamChoiceLabeled>;
+								 >;
 
 namespace
 {
