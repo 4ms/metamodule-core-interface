@@ -44,6 +44,13 @@ struct Indices {
 	bool operator==(const Indices &rhs) const = default;
 };
 
+static constexpr Indices NoElementIndices = {
+	Indices::NoElementMarker,
+	Indices::NoElementMarker,
+	Indices::NoElementMarker,
+	Indices::NoElementMarker,
+};
+
 constexpr bool operator==(MetaModule::BaseElement a, MetaModule::BaseElement b) {
 	// We assume all elements have distinct coordinates and/or names
 	// FIXME: This will fail if two elements have different type but identical elements
