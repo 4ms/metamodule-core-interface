@@ -1,6 +1,7 @@
 #pragma once
 #include "CoreModules/elements/element_counter.hh"
 #include "CoreModules/elements/elements.hh"
+#include <cstdint>
 
 namespace MetaModule::ElementIndex
 {
@@ -25,4 +26,67 @@ inline uint8_t get_index(const JackOutput &, ElementCount::Indices indices) {
 	return indices.output_idx;
 }
 
+struct SetIndex {
+	uint8_t index;
+
+	ElementCount::Indices operator()(const ParamElement &) {
+		ElementCount::Indices indices = ElementCount::NoElementIndices;
+		indices.param_idx = index;
+		return indices;
+	}
+
+	inline ElementCount::Indices operator()(const LightElement &) {
+		ElementCount::Indices indices = ElementCount::NoElementIndices;
+		indices.light_idx = index;
+		return indices;
+	}
+
+	inline ElementCount::Indices operator()(const JackInput &) {
+		ElementCount::Indices indices = ElementCount::NoElementIndices;
+		indices.input_idx = index;
+		return indices;
+	}
+
+	inline ElementCount::Indices operator()(const JackOutput &) {
+		ElementCount::Indices indices = ElementCount::NoElementIndices;
+		indices.output_idx = index;
+		return indices;
+	}
+
+	inline ElementCount::Indices operator()(const BaseElement &) {
+		return ElementCount::NoElementIndices;
+	}
+};
+
+inline ElementCount::Indices set_index(const Element &element, uint8_t idx) {
+	return std::visit(MetaModule::ElementIndex::SetIndex{idx}, element);
+}
+
+inline ElementCount::Indices set_index(const ParamElement &, uint8_t index) {
+	ElementCount::Indices indices = ElementCount::NoElementIndices;
+	indices.param_idx = index;
+	return indices;
+}
+
+inline ElementCount::Indices set_index(const LightElement &, uint8_t index) {
+	ElementCount::Indices indices = ElementCount::NoElementIndices;
+	indices.light_idx = index;
+	return indices;
+}
+
+inline ElementCount::Indices set_index(const JackInput &, uint8_t index) {
+	ElementCount::Indices indices = ElementCount::NoElementIndices;
+	indices.input_idx = index;
+	return indices;
+}
+
+inline ElementCount::Indices set_index(const JackOutput &, uint8_t index) {
+	ElementCount::Indices indices = ElementCount::NoElementIndices;
+	indices.output_idx = index;
+	return indices;
+}
+
+inline ElementCount::Indices set_index(const BaseElement &, uint8_t index) {
+	return ElementCount::NoElementIndices;
+}
 }; // namespace MetaModule::ElementIndex
