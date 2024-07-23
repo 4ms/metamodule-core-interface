@@ -62,31 +62,4 @@ inline ElementCount::Indices set_index(const Element &element, uint8_t idx) {
 	return std::visit(MetaModule::ElementIndex::SetIndex{idx}, element);
 }
 
-inline ElementCount::Indices set_index(const ParamElement &, uint8_t index) {
-	ElementCount::Indices indices = ElementCount::NoElementIndices;
-	indices.param_idx = index;
-	return indices;
-}
-
-inline ElementCount::Indices set_index(const LightElement &, uint8_t index) {
-	ElementCount::Indices indices = ElementCount::NoElementIndices;
-	indices.light_idx = index;
-	return indices;
-}
-
-inline ElementCount::Indices set_index(const JackInput &, uint8_t index) {
-	ElementCount::Indices indices = ElementCount::NoElementIndices;
-	indices.input_idx = index;
-	return indices;
-}
-
-inline ElementCount::Indices set_index(const JackOutput &, uint8_t index) {
-	ElementCount::Indices indices = ElementCount::NoElementIndices;
-	indices.output_idx = index;
-	return indices;
-}
-
-inline ElementCount::Indices set_index(const BaseElement &, uint8_t index) {
-	return ElementCount::NoElementIndices;
-}
 }; // namespace MetaModule::ElementIndex
