@@ -171,7 +171,11 @@ struct RgbLight : LightElement {
 };
 
 // Displays
-struct Display : LightElement {}; //TODO: does this need its own category?
+struct TextDisplay : LightElement {
+	std::string_view text;
+	std::string_view font;
+	RGB565 color;
+};
 
 // AltParams:
 // Like Params but they are not drawn on the faceplate (access by menu only)

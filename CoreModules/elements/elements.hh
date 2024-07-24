@@ -38,7 +38,7 @@ using Element = std::variant<NullElement,
 							 DualLight,
 							 RgbLight,
 
-							 Display, //TODO
+							 TextDisplay,
 
 							 AltParamContinuous,
 							 AltParamChoice,
