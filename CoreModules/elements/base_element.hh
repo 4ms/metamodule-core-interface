@@ -172,9 +172,9 @@ struct RgbLight : LightElement {
 
 // Displays
 struct TextDisplay : LightElement {
-	std::string_view text;
-	std::string_view font;
-	RGB565 color;
+	std::string_view text = "";
+	std::string_view font = "";
+	RGB565 color = Colors565::Grey;
 };
 
 // AltParams:
