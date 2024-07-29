@@ -15,10 +15,6 @@ public:
 	virtual float get_led_brightness(const int led_id) const {
 		return 0;
 	}
-
-	static constexpr unsigned NameChars = 15;
-	static constexpr unsigned LongNameChars = 39;
-
 	virtual void mark_all_inputs_unpatched() {
 	}
 	virtual void mark_input_unpatched(const int input_id) {
@@ -37,10 +33,9 @@ public:
 	virtual std::string save_state() {
 		return "";
 	}
-
 	virtual ~CoreProcessor() = default;
 
-	// common default values, OK to override or ignored
-	static constexpr float CvRangeVolts = 5.0f;
-	static constexpr float MaxOutputVolts = 8.0f;
+	uint32_t id{};
+	static constexpr float CvRangeVolts = 5.f;
+	static constexpr float MaxOutputVolts = 8.f;
 };
