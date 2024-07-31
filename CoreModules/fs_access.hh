@@ -7,22 +7,22 @@ namespace MetaModule
 {
 
 struct FS {
-	FS(std::string_view);
+	FS(std::string_view root);
 	~FS();
 
 	// Read-only:
-	FRESULT f_open(FIL *fp, const char *path, uint8_t mode);
+	FRESULT f_open(FIL *fp, const TCHAR *path, BYTE mode);
 	FRESULT f_close(FIL *fp);
-	FRESULT f_read(FIL *fp, void *buff, unsigned btr, unsigned *br);
-	FRESULT f_lseek(FIL *fp, uint64_t ofs);
-	FRESULT f_opendir(DIR *dp, const char *path);
+	FRESULT f_read(FIL *fp, void *buff, UINT btr, UINT *br);
+	FRESULT f_lseek(FIL *fp, FSIZE_t ofs);
+	FRESULT f_opendir(DIR *dp, const TCHAR *path);
 	FRESULT f_closedir(DIR *dp);
 	FRESULT f_readdir(DIR *dp, FILINFO *fno);
-	FRESULT f_stat(const char *path, FILINFO *fno);
-	char *f_gets(char *buff, int len, FIL *fp);
+	FRESULT f_stat(const TCHAR *path, FILINFO *fno);
+	char *f_gets(TCHAR *buff, int len, FIL *fp);
 
 	// Directory states
-	FRESULT f_getcwd(char *buff, uint32_t len);
+	FRESULT f_getcwd(TCHAR *buff, UINT len);
 	FRESULT f_chdir(const TCHAR *path);
 
 	// Writing:
@@ -33,7 +33,7 @@ struct FS {
 	FRESULT f_unlink(const TCHAR *path);
 	FRESULT f_rename(const TCHAR *path_old, const TCHAR *path_new);
 	FRESULT f_utime(const TCHAR *path, const FILINFO *fno);
-	FRESULT f_expand(FIL *fp, FSIZE_t fsz, uint8_t opt); /* Allocate a contiguous block to the file */
+	FRESULT f_expand(FIL *fp, FSIZE_t fsz, BYTE opt); /* Allocate a contiguous block to the file */
 	int f_putc(TCHAR c, FIL *fp);
 	int f_puts(const TCHAR *str, FIL *cp);
 	int f_printf(FIL *fp, const TCHAR *str, ...);
