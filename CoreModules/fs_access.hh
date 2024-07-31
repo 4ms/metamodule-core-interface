@@ -1,5 +1,6 @@
 #pragma once
 #include "ff.h"
+#include <memory>
 #include <string>
 
 namespace MetaModule
@@ -7,6 +8,7 @@ namespace MetaModule
 
 struct FS {
 	FS(std::string_view);
+	~FS();
 
 	// Read-only:
 	FRESULT f_open(FIL *fp, const char *path, uint8_t mode);
@@ -30,7 +32,6 @@ struct FS {
 	FRESULT f_mkdir(const TCHAR *path);
 	FRESULT f_unlink(const TCHAR *path);
 	FRESULT f_rename(const TCHAR *path_old, const TCHAR *path_new);
-	FRESULT f_chmod(const TCHAR *path, uint8_t attr, uint8_t mask);
 	FRESULT f_utime(const TCHAR *path, const FILINFO *fno);
 	FRESULT f_expand(FIL *fp, FSIZE_t fsz, uint8_t opt); /* Allocate a contiguous block to the file */
 	int f_putc(TCHAR c, FIL *fp);
@@ -81,7 +82,7 @@ struct FS {
 	}
 
 private:
-	std::string root;
-	std::string cwd;
+	struct Impl;
+	std::unique_ptr<FS::Impl> impl;
 };
 } // namespace MetaModule
