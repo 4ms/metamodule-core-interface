@@ -15,32 +15,35 @@ struct FS {
 	FRESULT f_close(FIL *fp);
 	FRESULT f_read(FIL *fp, void *buff, UINT btr, UINT *br);
 	FRESULT f_lseek(FIL *fp, FSIZE_t ofs);
-	FRESULT f_opendir(DIR *dp, const TCHAR *path);
-	FRESULT f_closedir(DIR *dp);
-	FRESULT f_readdir(DIR *dp, FILINFO *fno);
 	FRESULT f_stat(const TCHAR *path, FILINFO *fno);
 	char *f_gets(TCHAR *buff, int len, FIL *fp);
 
-	// Directory states
+	// Dirs
+	FRESULT f_opendir(DIR *dp, const TCHAR *path);
+	FRESULT f_closedir(DIR *dp);
+	FRESULT f_readdir(DIR *dp, FILINFO *fno);
+	FRESULT f_findfirst(DIR *dp, FILINFO *fno, const TCHAR *path, const TCHAR *pattern);
+	FRESULT f_findnext(DIR *dp, FILINFO *fno);
+
+	// Create dir
+	FRESULT f_mkdir(const TCHAR *path);
+
+	// Working Dir
 	FRESULT f_getcwd(TCHAR *buff, UINT len);
 	FRESULT f_chdir(const TCHAR *path);
 
 	// Writing:
 	FRESULT f_write(FIL *fp, const void *buff, UINT btw, UINT *bw);
-	FRESULT f_truncate(FIL *fp);
 	FRESULT f_sync(FIL *fp);
-	FRESULT f_mkdir(const TCHAR *path);
-	FRESULT f_unlink(const TCHAR *path);
-	FRESULT f_rename(const TCHAR *path_old, const TCHAR *path_new);
-	FRESULT f_utime(const TCHAR *path, const FILINFO *fno);
-	FRESULT f_expand(FIL *fp, FSIZE_t fsz, BYTE opt); /* Allocate a contiguous block to the file */
+	FRESULT f_truncate(FIL *fp);
 	int f_putc(TCHAR c, FIL *fp);
 	int f_puts(const TCHAR *str, FIL *cp);
 	int f_printf(FIL *fp, const TCHAR *str, ...);
 
-	// Directory browsing
-	FRESULT f_findfirst(DIR *dp, FILINFO *fno, const TCHAR *path, const TCHAR *pattern); /* Find first file */
-	FRESULT f_findnext(DIR *dp, FILINFO *fno);											 /* Find next file */
+	FRESULT f_unlink(const TCHAR *path);
+	FRESULT f_rename(const TCHAR *path_old, const TCHAR *path_new);
+	FRESULT f_utime(const TCHAR *path, const FILINFO *fno);
+	FRESULT f_expand(FIL *fp, FSIZE_t fsz, BYTE opt);
 
 #ifndef f_eof
 	static bool f_eof(FIL *fp) {
