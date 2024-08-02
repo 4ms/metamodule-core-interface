@@ -9,7 +9,7 @@ namespace MetaModule
 
 struct FS {
 
-	FS(std::string_view root);
+	FS(std::string_view root = "");
 	~FS();
 
 	// Read-only:
@@ -51,6 +51,8 @@ struct FS {
 	void reset_dir(Dir *dp);
 	bool is_file_reset(File *fp);
 	bool is_dir_reset(Dir *fp);
+
+	bool find_valid_root(std::string_view path);
 
 #undef f_eof
 	static bool f_eof(File *fp);
