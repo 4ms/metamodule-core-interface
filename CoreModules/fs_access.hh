@@ -1,5 +1,6 @@
 #pragma once
 #include "ff_host.hh"
+#include <cstdint>
 #include <memory>
 #include <string>
 
@@ -12,64 +13,64 @@ struct FS {
 	~FS();
 
 	// Read-only:
-	FRESULT f_open(FIL *fp, const TCHAR *path, BYTE mode);
-	FRESULT f_close(FIL *fp);
-	FRESULT f_read(FIL *fp, void *buff, UINT btr, UINT *br);
-	FRESULT f_lseek(FIL *fp, FSIZE_t ofs);
-	FRESULT f_stat(const TCHAR *path, FILINFO *fno);
-	char *f_gets(TCHAR *buff, int len, FIL *fp);
+	FRESULT f_open(File *fp, const char *path, uint8_t mode);
+	FRESULT f_close(File *fp);
+	FRESULT f_read(File *fp, void *buff, unsigned btr, unsigned *br);
+	FRESULT f_lseek(File *fp, uint64_t ofs);
+	FRESULT f_stat(const char *path, Fileinfo *fno);
+	char *f_gets(char *buff, int len, File *fp);
 
 	// Dirs
-	FRESULT f_opendir(DIR *dp, const TCHAR *path);
-	FRESULT f_closedir(DIR *dp);
-	FRESULT f_readdir(DIR *dp, FILINFO *fno);
-	FRESULT f_findfirst(DIR *dp, FILINFO *fno, const TCHAR *path, const TCHAR *pattern);
-	FRESULT f_findnext(DIR *dp, FILINFO *fno);
+	FRESULT f_opendir(Dir *dp, const char *path);
+	FRESULT f_closedir(Dir *dp);
+	FRESULT f_readdir(Dir *dp, Fileinfo *fno);
+	FRESULT f_findfirst(Dir *dp, Fileinfo *fno, const char *path, const char *pattern);
+	FRESULT f_findnext(Dir *dp, Fileinfo *fno);
 
 	// Create dir
-	FRESULT f_mkdir(const TCHAR *path);
+	FRESULT f_mkdir(const char *path);
 
 	// Working Dir
-	FRESULT f_getcwd(TCHAR *buff, UINT len);
-	FRESULT f_chdir(const TCHAR *path);
+	FRESULT f_getcwd(char *buff, unsigned len);
+	FRESULT f_chdir(const char *path);
 
 	// Writing:
-	FRESULT f_write(FIL *fp, const void *buff, UINT btw, UINT *bw);
-	FRESULT f_sync(FIL *fp);
-	FRESULT f_truncate(FIL *fp);
-	int f_putc(TCHAR c, FIL *fp);
-	int f_puts(const TCHAR *str, FIL *cp);
-	int f_printf(FIL *fp, const TCHAR *str, ...);
+	FRESULT f_write(File *fp, const void *buff, unsigned btw, unsigned *bw);
+	FRESULT f_sync(File *fp);
+	FRESULT f_truncate(File *fp);
+	int f_putc(char c, File *fp);
+	int f_puts(const char *str, File *cp);
+	int f_printf(File *fp, const char *str, ...);
 
-	FRESULT f_unlink(const TCHAR *path);
-	FRESULT f_rename(const TCHAR *path_old, const TCHAR *path_new);
-	FRESULT f_utime(const TCHAR *path, const FILINFO *fno);
-	FRESULT f_expand(FIL *fp, FSIZE_t fsz, BYTE opt);
+	FRESULT f_unlink(const char *path);
+	FRESULT f_rename(const char *path_old, const char *path_new);
+	FRESULT f_utime(const char *path, const Fileinfo *fno);
+	FRESULT f_expand(File *fp, uint64_t fsz, uint8_t opt);
 
-	void reset_file(FIL *fp);
-	bool is_file_reset(FIL *fp);
-	void reset_dir(DIR *dp);
+	void reset_file(File *fp);
+	bool is_file_reset(File *fp);
+	void reset_dir(Dir *dp);
 
 #undef f_eof
-	static bool f_eof(FIL *fp);
+	static bool f_eof(File *fp);
 
 #undef f_error
-	static BYTE f_error(FIL *fp);
+	static uint8_t f_error(File *fp);
 
 #undef f_tell
-	static FSIZE_t f_tell(FIL *fp);
+	static uint64_t f_tell(File *fp);
 
 #undef f_size
-	static FSIZE_t f_size(FIL *fp);
+	static uint64_t f_size(File *fp);
 
 #undef f_rewind
-	FRESULT f_rewind(FIL *fp);
+	FRESULT f_rewind(File *fp);
 
 #undef f_rewinddir
-	FRESULT f_rewinddir(DIR *dp);
+	FRESULT f_rewinddir(Dir *dp);
 
 #undef f_rmdir
-	FRESULT f_rmdir(const TCHAR *path);
+	FRESULT f_rmdir(const char *path);
 
 private:
 	struct Impl;
