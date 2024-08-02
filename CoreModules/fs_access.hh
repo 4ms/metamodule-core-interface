@@ -48,8 +48,9 @@ struct FS {
 	FRESULT f_expand(File *fp, uint64_t fsz, uint8_t opt);
 
 	void reset_file(File *fp);
-	bool is_file_reset(File *fp);
 	void reset_dir(Dir *dp);
+	bool is_file_reset(File *fp);
+	bool is_dir_reset(Dir *fp);
 
 #undef f_eof
 	static bool f_eof(File *fp);
