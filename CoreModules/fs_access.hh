@@ -1,5 +1,5 @@
 #pragma once
-#include "ff.h"
+#include "ff_host.hh"
 #include <memory>
 #include <string>
 
@@ -7,6 +7,7 @@ namespace MetaModule
 {
 
 struct FS {
+
 	FS(std::string_view root);
 	~FS();
 
@@ -46,27 +47,32 @@ struct FS {
 	FRESULT f_expand(FIL *fp, FSIZE_t fsz, BYTE opt);
 
 #ifndef f_eof
-	static bool f_eof(FIL *fp) {
-		return fp->fptr == fp->obj.objsize;
-	}
+	static bool f_eof(FIL *fp);
+	// static bool f_eof(FIL *fp) {
+	// 	return fp->fptr == fp->obj.objsize;
+	// }
 #endif
 
 #ifndef f_error
-	static BYTE f_error(FIL *fp) {
-		return fp->err;
-	}
+	static BYTE f_error(FIL *fp);
+	// static BYTE f_error(FIL *fp) {
+	// 	return fp->err;
+	// }
 #endif
 
 #ifndef f_tell
-	static FSIZE_t f_tell(FIL *fp) {
-		return fp->fptr;
-	}
+	static FSIZE_t f_tell(FIL *fp);
+	// static FSIZE_t f_tell(FIL *fp) {
+	// 	return fp->fptr;
+	// }
 #endif
 
 #ifndef f_size
-	static FSIZE_t f_size(FIL *fp) {
-		return fp->obj.objsize;
-	}
+	static FSIZE_t f_size(FIL *fp);
+	;
+	// static FSIZE_t f_size(FIL *fp) {
+	// 	return fp->obj.objsize;
+	// }
 #endif
 
 #undef f_rewind
