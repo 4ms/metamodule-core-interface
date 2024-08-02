@@ -46,49 +46,30 @@ struct FS {
 	FRESULT f_utime(const TCHAR *path, const FILINFO *fno);
 	FRESULT f_expand(FIL *fp, FSIZE_t fsz, BYTE opt);
 
-#ifndef f_eof
+	void reset_file(FIL *fp);
+	bool is_file_reset(FIL *fp);
+	void reset_dir(DIR *dp);
+
+#undef f_eof
 	static bool f_eof(FIL *fp);
-	// static bool f_eof(FIL *fp) {
-	// 	return fp->fptr == fp->obj.objsize;
-	// }
-#endif
 
-#ifndef f_error
+#undef f_error
 	static BYTE f_error(FIL *fp);
-	// static BYTE f_error(FIL *fp) {
-	// 	return fp->err;
-	// }
-#endif
 
-#ifndef f_tell
+#undef f_tell
 	static FSIZE_t f_tell(FIL *fp);
-	// static FSIZE_t f_tell(FIL *fp) {
-	// 	return fp->fptr;
-	// }
-#endif
 
-#ifndef f_size
+#undef f_size
 	static FSIZE_t f_size(FIL *fp);
-	;
-	// static FSIZE_t f_size(FIL *fp) {
-	// 	return fp->obj.objsize;
-	// }
-#endif
 
 #undef f_rewind
-	inline FRESULT f_rewind(FIL *fp) {
-		return this->f_lseek(fp, 0);
-	}
+	FRESULT f_rewind(FIL *fp);
 
 #undef f_rewinddir
-	inline FRESULT f_rewinddir(DIR *dp) {
-		return this->f_readdir(dp, nullptr);
-	}
+	FRESULT f_rewinddir(DIR *dp);
 
 #undef f_rmdir
-	inline FRESULT f_rmdir(const TCHAR *path) {
-		return this->f_unlink(path);
-	}
+	FRESULT f_rmdir(const TCHAR *path);
 
 private:
 	struct Impl;
