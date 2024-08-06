@@ -2,7 +2,7 @@
 #include "ff_host.hh"
 #include <cstdint>
 #include <memory>
-#include <string>
+#include <string_view>
 
 namespace MetaModule
 {
