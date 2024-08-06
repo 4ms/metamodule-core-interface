@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <span>
 #include <string>
 #include <string_view>
 
@@ -8,11 +9,14 @@ public:
 	CoreProcessor() = default;
 
 	virtual void update() = 0;
-	virtual void set_samplerate(const float sr) = 0;
-	virtual void set_param(const int param_id, const float val) = 0;
-	virtual void set_input(const int input_id, const float val) = 0;
-	virtual float get_output(const int output_id) const = 0;
-	virtual float get_led_brightness(const int led_id) const {
+	virtual void set_samplerate(float sr) = 0;
+	virtual void set_param(int param_id, float val) = 0;
+	virtual void set_input(int input_id, float val) = 0;
+	virtual float get_output(int output_id) const = 0;
+	virtual float get_led_brightness(int led_id) const {
+		return 0;
+	}
+	virtual size_t get_display_text(int display_id, std::span<char> text) const {
 		return 0;
 	}
 
@@ -21,15 +25,15 @@ public:
 
 	virtual void mark_all_inputs_unpatched() {
 	}
-	virtual void mark_input_unpatched(const int input_id) {
+	virtual void mark_input_unpatched(int input_id) {
 	}
-	virtual void mark_input_patched(const int input_id) {
+	virtual void mark_input_patched(int input_id) {
 	}
 	virtual void mark_all_outputs_unpatched() {
 	}
-	virtual void mark_output_unpatched(const int output_id) {
+	virtual void mark_output_unpatched(int output_id) {
 	}
-	virtual void mark_output_patched(const int output_id) {
+	virtual void mark_output_patched(int output_id) {
 	}
 
 	virtual void load_state(std::string_view state_data) {
