@@ -39,6 +39,7 @@ using Element = std::variant<NullElement,
 							 RgbLight,
 
 							 TextDisplay,
+							 DynamicTextDisplay,
 
 							 AltParamContinuous,
 							 AltParamChoice,
