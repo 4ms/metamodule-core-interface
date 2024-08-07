@@ -177,6 +177,10 @@ struct TextDisplay : LightElement {
 	RGB565 color = Colors565::Grey;
 };
 
+struct DynamicTextDisplay : TextDisplay {
+	static constexpr size_t NumLights = 1;
+};
+
 // AltParams:
 // Like Params but they are not drawn on the faceplate (access by menu only)
 struct AltParamElement : BaseElement {
