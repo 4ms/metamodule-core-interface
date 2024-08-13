@@ -16,7 +16,7 @@ public:
 	virtual float get_led_brightness(int led_id) const {
 		return 0;
 	}
-	virtual size_t get_display_text(int display_id, std::span<char> text) const {
+	virtual size_t get_display_text(int display_id, std::span<char> text) {
 		return 0;
 	}
 
