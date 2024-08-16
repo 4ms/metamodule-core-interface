@@ -119,4 +119,55 @@ constexpr std::array<float, T::NumLights> convertLED(const T &, FullColor_t colo
 	return {red, green, blue};
 }
 
+////////////////////////////////////////
+/// TESTS (gcc only)
+
+#ifndef __clang__
+// 7-pos switch:
+// Positions:
+//  1/7     2/7    3/7     4/7     5/7     6/7     7/7
+
+//|.....|.......|......|.......|.......|.......|.......|
+//0...0.5/6   1.5/6   2.5/6  3.5/6   4.5/6   5.5/6     1
+
+constexpr SlideSwitch sw7 = SlideSwitch{{{{}}, 7}};
+static_assert(convertState(sw7, 0.f) == 1.f);
+
+// Slightly under/over each breakpoint:
+static_assert(convertState(sw7, 0.5 / 6. - 0.001) == 1);
+static_assert(convertState(sw7, 0.5 / 6. + 0.001) == 2);
+
+static_assert(convertState(sw7, 1.5 / 6. - 0.001) == 2);
+static_assert(convertState(sw7, 1.5 / 6. + 0.001) == 3);
+
+static_assert(convertState(sw7, 2.5 / 6. - 0.001) == 3);
+static_assert(convertState(sw7, 2.5 / 6. + 0.001) == 4);
+
+static_assert(convertState(sw7, 3.5 / 6. - 0.001) == 4);
+static_assert(convertState(sw7, 3.5 / 6. + 0.001) == 5);
+
+static_assert(convertState(sw7, 4.5 / 6. - 0.001) == 5);
+static_assert(convertState(sw7, 4.5 / 6. + 0.001) == 6);
+
+static_assert(convertState(sw7, 5.5 / 6. - 0.001) == 6);
+static_assert(convertState(sw7, 5.5 / 6. + 0.001) == 7);
+
+static_assert(convertState(sw7, 1.0) == 7);
+
+// 2-pos switch:
+// Positions:
+//  1/2    2/2
+//|......|......|
+//0    0.5/1    1
+
+constexpr SlideSwitch sw2 = SlideSwitch{{{{}}, 2}};
+static_assert(convertState(sw2, 0.0) == 1);
+
+// Slightly under/over each breakpoint:
+static_assert(convertState(sw2, 0.5 / 1. - 0.001) == 1);
+static_assert(convertState(sw2, 0.5 / 1. + 0.001) == 2);
+
+static_assert(convertState(sw2, 1.0) == 2);
+#endif
+
 } // namespace MetaModule::StateConversion
