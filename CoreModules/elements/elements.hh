@@ -52,6 +52,9 @@ inline constexpr auto ElementSize = sizeof(Element);
 
 // helper:
 inline BaseElement base_element(const Element &el) {
-	return std::visit([](auto e) { return BaseElement{e}; }, el);
+	if (el.index() == Element{NullElement{}}.index())
+		return BaseElement{};
+	else
+		return std::visit([](auto e) { return BaseElement{e}; }, el);
 }
 } // namespace MetaModule
