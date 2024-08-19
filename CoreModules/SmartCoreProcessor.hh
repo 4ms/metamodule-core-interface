@@ -134,7 +134,7 @@ private:
 
 	constexpr static auto index(Elem el) {
 		auto element_idx = element_index(el);
-		return element_idx < indices.size() ? indices[element_idx] : ElementCount::NoElementIndices;
+		return (size_t)element_idx < indices.size() ? indices[element_idx] : ElementCount::NoElementIndices;
 	}
 
 public:
