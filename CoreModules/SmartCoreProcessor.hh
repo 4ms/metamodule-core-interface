@@ -62,9 +62,7 @@ protected:
 	{
 		auto idx = index(EL);
 		if (idx.input_idx < inputValues.size()) {
-			auto result = inputValues[idx.input_idx];
-			inputValues[idx.input_idx].reset();
-			return result;
+			return inputValues[idx.input_idx];
 		} else
 			return std::nullopt;
 	}
@@ -174,8 +172,11 @@ public:
 	}
 
 	void mark_input_patched(const int input_id) override {
-		// do nothing here
-		// value will be set by next update
+		if ((size_t)input_id < inputValues.size()) {
+			// Marking an input patched, but not setting a voltage on the jack: assume 0V
+			if (!inputValues[input_id].has_value())
+				inputValues[input_id] = 0.f;
+		}
 	}
 
 	void mark_all_outputs_unpatched() override {
