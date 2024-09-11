@@ -14,6 +14,7 @@ struct ModuleInfoView {
 	uint32_t width_hp = 0;
 	std::span<const Element> elements;
 	std::span<const ElementCount::Indices> indices;
+	std::span<const ModuleInfoBase::BypassRoute> bypass_routes;
 
 	template<Derived<ModuleInfoBase> T>
 	static ModuleInfoView makeView() {
@@ -23,6 +24,7 @@ struct ModuleInfoView {
 			.width_hp = T::width_hp,
 			.elements = T::Elements,
 			.indices = s_indices,
+			.bypass_routes = T::bypass_routes,
 		};
 	}
 };

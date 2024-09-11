@@ -15,6 +15,12 @@ struct ModuleInfoBase {
 	static constexpr std::array<Element, 0> Elements{};
 	static constexpr std::string_view svg_filename{""};
 	static constexpr std::string_view png_filename{""};
+
+	struct BypassRoute {
+		uint16_t input;
+		uint16_t output;
+	};
+	static constexpr std::array<BypassRoute, 0> bypass_routes{};
 };
 
 } // namespace MetaModule
