@@ -72,6 +72,11 @@ constexpr Counts count() {
 	});
 }
 
+constexpr Counts count(std::span<const MetaModule::Element> elements) {
+	return std::accumulate(
+		elements.begin(), elements.end(), Counts{}, [](auto total, auto element) { return total + count(element); });
+}
+
 template<typename Info>
 constexpr std::optional<Indices> get_indices(const MetaModule::BaseElement &element) {
 	Indices idx{};
