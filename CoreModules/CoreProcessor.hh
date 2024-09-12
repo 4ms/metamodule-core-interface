@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 #include <cstdint>
 #include <span>
 #include <string>
@@ -47,4 +48,12 @@ public:
 	// common default values, OK to override or ignored
 	static constexpr float CvRangeVolts = 5.0f;
 	static constexpr float MaxOutputVolts = 8.0f;
+
+	template<typename ModuleT>
+	static CoreProcessor *create_module() {
+		// Zero-init memory and construct with placement-new
+		auto rawmem = new uint8_t[sizeof(ModuleT)];
+		std::fill(rawmem, rawmem + sizeof(ModuleT), 0);
+		return new (rawmem) ModuleT;
+	}
 };
