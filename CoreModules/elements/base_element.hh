@@ -68,10 +68,22 @@ struct ParamElement : ImageElement {
 // Pots (Knobs, Sliders)
 struct Pot : ParamElement {
 	using State_t = float;
-	State_t DefaultValue = 0.5f;
+	State_t default_value = 0.5f;
+	State_t min_value = 0.f;
+	State_t max_value = 1.f;
+	float display_base = 0.f;
+	float display_mult = 1.f;
+	float display_offset = 0.f;
+	std::string_view units = "";
 };
 
-struct Knob : Pot {};
+struct Knob : Pot {
+	// How much to rotate the image when param val == 0
+	// negative is CCW, positive is CW
+	float min_angle = -135.f;
+	// How much to rotate the image when param val == 1
+	float max_angle = 135.f;
+};
 
 struct Slider : Pot {
 	std::string_view image_handle = "";
