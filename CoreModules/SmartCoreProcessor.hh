@@ -154,6 +154,13 @@ public:
 		}
 	}
 
+	float get_param(int param_id) override {
+		if (size_t(param_id) < paramValues.size())
+			return paramValues[param_id];
+		else
+			return 0.f;
+	}
+
 	float get_led_brightness(int led_id) const override {
 		if ((size_t)led_id < ledValues.size()) {
 			return ledValues[led_id];
