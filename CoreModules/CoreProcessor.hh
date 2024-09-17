@@ -9,9 +9,11 @@ public:
 	CoreProcessor() = default;
 
 	virtual void update() = 0;
+
 	virtual void set_samplerate(float sr) = 0;
 	virtual void set_param(int param_id, float val) = 0;
 	virtual void set_input(int input_id, float val) = 0;
+
 	virtual float get_output(int output_id) const = 0;
 	virtual float get_led_brightness(int led_id) const {
 		return 0;
@@ -19,9 +21,9 @@ public:
 	virtual size_t get_display_text(int display_id, std::span<char> text) {
 		return 0;
 	}
-
-	static constexpr unsigned NameChars = 15;
-	static constexpr unsigned LongNameChars = 39;
+	virtual float get_param(int param_id) {
+		return 0;
+	}
 
 	virtual void mark_all_inputs_unpatched() {
 	}
@@ -44,9 +46,11 @@ public:
 
 	virtual ~CoreProcessor() = default;
 
+	bool bypassed = false;
+
 	// common default values, OK to override or ignore
 	static constexpr float CvRangeVolts = 5.0f;
 	static constexpr float MaxOutputVolts = 8.0f;
-
-	bool bypassed = false;
+	static constexpr unsigned NameChars = 15;
+	static constexpr unsigned LongNameChars = 39;
 };
