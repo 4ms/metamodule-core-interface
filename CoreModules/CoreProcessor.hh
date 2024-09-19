@@ -21,7 +21,7 @@ public:
 	virtual size_t get_display_text(int display_id, std::span<char> text) {
 		return 0;
 	}
-	virtual float get_param(int param_id) {
+	virtual float get_param(int param_id) const {
 		return 0;
 	}
 
