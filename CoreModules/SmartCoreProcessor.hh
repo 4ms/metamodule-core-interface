@@ -154,7 +154,7 @@ public:
 		}
 	}
 
-	float get_param(int param_id) override {
+	float get_param(int param_id) const override {
 		if (size_t(param_id) < paramValues.size())
 			return paramValues[param_id];
 		else
