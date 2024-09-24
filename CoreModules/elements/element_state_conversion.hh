@@ -38,8 +38,8 @@ constexpr FlipSwitch::State_t convertState(const T &element, float val) requires
 template<typename T>
 constexpr SlideSwitch::State_t convertState(const T &element, float val) requires(std::derived_from<T, SlideSwitch>)
 {
-	//maps 0..1 -> 1..N
-	return SlideSwitch::State_t(1 + std::round(val * (float)(element.num_pos - 1)));
+	//maps 0..1 -> 0..N-1
+	return SlideSwitch::State_t(std::round(val * (float)(element.num_pos - 1)));
 }
 
 template<typename T>
@@ -131,43 +131,43 @@ constexpr std::array<float, T::NumLights> convertLED(const T &, FullColor_t colo
 //0...0.5/6   1.5/6   2.5/6  3.5/6   4.5/6   5.5/6     1
 
 constexpr SlideSwitch sw7 = SlideSwitch{{{{}}, 7}};
-static_assert(convertState(sw7, 0.f) == 1.f);
+static_assert(convertState(sw7, 0.f) == 0.f);
 
 // Slightly under/over each breakpoint:
-static_assert(convertState(sw7, 0.5 / 6. - 0.001) == 1);
-static_assert(convertState(sw7, 0.5 / 6. + 0.001) == 2);
+static_assert(convertState(sw7, 0.5 / 6. - 0.001) == 0);
+static_assert(convertState(sw7, 0.5 / 6. + 0.001) == 1);
 
-static_assert(convertState(sw7, 1.5 / 6. - 0.001) == 2);
-static_assert(convertState(sw7, 1.5 / 6. + 0.001) == 3);
+static_assert(convertState(sw7, 1.5 / 6. - 0.001) == 1);
+static_assert(convertState(sw7, 1.5 / 6. + 0.001) == 2);
 
-static_assert(convertState(sw7, 2.5 / 6. - 0.001) == 3);
-static_assert(convertState(sw7, 2.5 / 6. + 0.001) == 4);
+static_assert(convertState(sw7, 2.5 / 6. - 0.001) == 2);
+static_assert(convertState(sw7, 2.5 / 6. + 0.001) == 3);
 
-static_assert(convertState(sw7, 3.5 / 6. - 0.001) == 4);
-static_assert(convertState(sw7, 3.5 / 6. + 0.001) == 5);
+static_assert(convertState(sw7, 3.5 / 6. - 0.001) == 3);
+static_assert(convertState(sw7, 3.5 / 6. + 0.001) == 4);
 
-static_assert(convertState(sw7, 4.5 / 6. - 0.001) == 5);
-static_assert(convertState(sw7, 4.5 / 6. + 0.001) == 6);
+static_assert(convertState(sw7, 4.5 / 6. - 0.001) == 4);
+static_assert(convertState(sw7, 4.5 / 6. + 0.001) == 5);
 
-static_assert(convertState(sw7, 5.5 / 6. - 0.001) == 6);
-static_assert(convertState(sw7, 5.5 / 6. + 0.001) == 7);
+static_assert(convertState(sw7, 5.5 / 6. - 0.001) == 5);
+static_assert(convertState(sw7, 5.5 / 6. + 0.001) == 6);
 
-static_assert(convertState(sw7, 1.0) == 7);
+static_assert(convertState(sw7, 1.0) == 6);
 
 // 2-pos switch:
 // Positions:
-//  1/2    2/2
+//  0/2    1/2
 //|......|......|
 //0    0.5/1    1
 
 constexpr SlideSwitch sw2 = SlideSwitch{{{{}}, 2}};
-static_assert(convertState(sw2, 0.0) == 1);
+static_assert(convertState(sw2, 0.0) == 0);
 
 // Slightly under/over each breakpoint:
-static_assert(convertState(sw2, 0.5 / 1. - 0.001) == 1);
-static_assert(convertState(sw2, 0.5 / 1. + 0.001) == 2);
+static_assert(convertState(sw2, 0.5 / 1. - 0.001) == 0);
+static_assert(convertState(sw2, 0.5 / 1. + 0.001) == 1);
 
-static_assert(convertState(sw2, 1.0) == 2);
+static_assert(convertState(sw2, 1.0) == 1);
 #endif
 
 } // namespace MetaModule::StateConversion
