@@ -62,7 +62,7 @@ struct NullElement : BaseElement {};
 // ParamElement: base class for pot, encoder, switch/button
 struct ParamElement : ImageElement {
 	static constexpr size_t NumParams = 1;
-	static constexpr float DefaultValue = 0;
+	static constexpr float default_value = 0;
 };
 
 // Pots (Knobs, Sliders)
@@ -102,7 +102,7 @@ struct Button : ParamElement {};
 struct MomentaryButton : Button {
 	enum class State_t { RELEASED, PRESSED };
 	std::string_view pressed_image = "";
-	static constexpr State_t DefaultValue = State_t::RELEASED;
+	static constexpr State_t default_value = State_t::RELEASED;
 };
 
 struct MomentaryButtonRGB : MomentaryButton {
@@ -118,7 +118,7 @@ struct MomentaryButtonLight : MomentaryButton {
 // whose alpha value equals the LED value
 struct LatchingButton : Button {
 	enum class State_t { UP, DOWN };
-	State_t DefaultValue = State_t::UP;
+	State_t default_value = State_t::UP;
 	static constexpr size_t NumLights = 1;
 	RGB565 color = Colors565::White;
 };
@@ -129,7 +129,7 @@ struct LatchingButton : Button {
 struct Switch : ParamElement {
 	using State_t = unsigned;
 	unsigned num_pos = 3;
-	State_t DefaultValue = 0;
+	State_t default_value = 0;
 };
 
 // FlipSwitch has up to 4 frames
@@ -201,7 +201,7 @@ struct AltParamElement : BaseElement {
 
 struct AltParamContinuous : AltParamElement {
 	using State_t = float;
-	State_t DefaultValue = 0.5f;
+	State_t default_value = 0.5f;
 	State_t MinValue = 0.0f;
 	State_t MaxValue = 1.0f;
 };
@@ -210,7 +210,7 @@ struct AltParamChoice : AltParamElement {
 	using State_t = unsigned;
 
 	unsigned num_pos = 2;
-	State_t DefaultValue = 0;
+	State_t default_value = 0;
 };
 
 struct AltParamChoiceLabeled : AltParamChoice {
