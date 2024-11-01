@@ -75,6 +75,8 @@ struct Pot : ParamElement {
 	float display_mult = 1.f;
 	float display_offset = 0.f;
 	std::string_view units = "";
+	bool integral = false;
+	uint8_t display_precision = 0;
 };
 
 struct Knob : Pot {
