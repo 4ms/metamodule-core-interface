@@ -46,11 +46,11 @@ public:
 
 	virtual ~CoreProcessor() = default;
 
-	bool bypassed = false;
+	bool bypassed{false};
+
+	uint32_t id{};
 
 	// common default values, OK to override or ignore
 	static constexpr float CvRangeVolts = 5.0f;
 	static constexpr float MaxOutputVolts = 8.0f;
-	static constexpr unsigned NameChars = 15;
-	static constexpr unsigned LongNameChars = 39;
 };
