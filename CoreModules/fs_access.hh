@@ -7,6 +7,9 @@
 namespace MetaModule
 {
 
+// forward declare implementation:
+struct FSProxyImpl;
+
 struct FS {
 
 	FS(std::string_view root = "");
@@ -76,7 +79,10 @@ struct FS {
 	FRESULT f_rmdir(const char *path);
 
 private:
-	struct Impl;
-	std::unique_ptr<FS::Impl> impl;
+	std::unique_ptr<FSProxyImpl> impl;
+	std::string root;
+	std::string cwd;
+
+	std::string full_path(const char *path);
 };
 } // namespace MetaModule
