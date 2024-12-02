@@ -10,10 +10,10 @@ namespace MetaModule
 // forward declare implementation:
 struct FSProxyImpl;
 
-struct FS {
+struct FatFS {
 
-	FS(std::string_view root = "");
-	~FS();
+	FatFS(std::string_view root = "");
+	~FatFS();
 
 	// Read-only:
 	FRESULT f_open(File *fp, const char *path, uint8_t mode);
