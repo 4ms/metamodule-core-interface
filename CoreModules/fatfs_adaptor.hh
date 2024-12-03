@@ -7,8 +7,8 @@
 namespace MetaModule
 {
 
-// forward declare implementation:
-struct FSProxyImpl;
+// forward declare (this is defined by host: cortex-a7, vcv, or simulator)
+struct FsProxy;
 
 struct FatFS {
 
@@ -79,7 +79,7 @@ struct FatFS {
 	FRESULT f_rmdir(const char *path);
 
 private:
-	std::unique_ptr<FSProxyImpl> impl;
+	std::unique_ptr<FsProxy> impl;
 	std::string root;
 	std::string cwd;
 
