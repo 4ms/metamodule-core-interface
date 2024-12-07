@@ -33,4 +33,8 @@ static constexpr float PNGpx_to_SVGpx(float px) {
 	return px / 240.f * 5.059f * DPI;
 }
 
+static constexpr int16_t svgpx_to_pngpx(float svgpx, float height = 240.f) {
+	return svgpx * height / (5.059f * 75);
+}
+
 } // namespace MetaModule
