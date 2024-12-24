@@ -137,9 +137,9 @@ struct Switch : ParamElement {
 // FlipSwitch has up to 4 frames
 // Frame n is drawn to indicate value == n/(num_pos-1)
 struct FlipSwitch : Switch {
-	static constexpr size_t MaxPositions = 4;
+	static constexpr size_t MaxPositions = 10;
 	std::array<std::string_view, MaxPositions> frames{};
-	std::array<std::string_view, MaxPositions> pos_names{"0", "1", "2", "3"};
+	std::array<std::string_view, MaxPositions> pos_names{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
 };
 
 // SlideSwitch has a bg (body) image and a fg (handle) image
