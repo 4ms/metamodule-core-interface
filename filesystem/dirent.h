@@ -8,8 +8,8 @@ extern "C" {
 struct DIR;
 
 struct dirent {
-	ino_t d_ino;   // File serial number.
-	char d_name[]; // Filename string of entry.
+	ino_t d_ino;	  // File serial number.
+	char d_name[256]; // Filename string of entry.
 };
 
 int alphasort(const struct dirent **, const struct dirent **);
