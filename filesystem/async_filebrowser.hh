@@ -19,17 +19,14 @@
 void async_open_file(std::string_view initial_path,
 					 std::string_view filter_extension_list,
 					 std::string_view title,
-					 std::function<void(char *path)> &&action);
+					 std::function<void(char *path)> action);
 
-void async_open_dir(std::string_view initial_path,
-					std::string_view filter_extension_list,
-					std::string_view title,
-					std::function<void(char *path)> &&action);
+void async_open_dir(std::string_view initial_path, std::string_view title, std::function<void(char *path)> action);
 
 void async_save_file(std::string_view initial_path,
 					 std::string_view filename,
-					 std::string_view title,
-					 std::function<void(char *path)> &&action);
+					 std::string_view extension,
+					 std::function<void(char *path)> action);
 
 // VCV:
 // Interface is close to rack's osdialog_file()
