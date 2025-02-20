@@ -13,6 +13,9 @@ public:
 	void start(unsigned module_id);
 	void start(unsigned module_id, Callback &&action);
 
+	void stop();
+	void run_once(unsigned module_id);
+
 	~AsyncThread();
 
 private:
