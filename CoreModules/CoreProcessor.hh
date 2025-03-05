@@ -50,6 +50,37 @@ public:
 
 	uint32_t id{};
 
+	// Initialize graphics for a display.
+	// This is called by the GUI engine to inform the module that a GraphicDisplay element is now being show on screen.
+	// Typically you will use this to initialize a canvas.
+	// This is called in the GUI context, so it's OK to allocate memory.
+	//
+	// Parameters:
+	// display_id: the ID of the display (e.g. CoreHelper<Info>::display_index<Elem::MyDisplay>() )
+	// pix_buffer: the buffer to which you should write the pixels when `get_canvas_pixels()` is called (RGBA8888)
+	// width, height: the dimensions of the buffer, in pixels. width*height == pixel_buffer.size()
+	//
+	virtual void show_graphic_display(int display_id, std::span<uint32_t> pix_buffer, uint16_t width, uint16_t height) {
+	}
+
+	// Write pixel data to the display's pixel buffer.
+	// The pixel buffer will have been previously passed to the module via show_graphic_display()
+	// This is called in the GUI context, so it's OK to allocate memory.
+	//
+	// Return true if made changes, false if no pixels changed
+	virtual bool get_canvas_pixels(int display_id) {
+		return false;
+	}
+
+	// De-initialize graphics for a display
+	// The GUI engine calls this to inform the module that the display is now hidden.
+	// Perform any clean-up here.
+	//
+	// This is called in the GUI context.
+	//
+	virtual void hide_graphic_display(int display_id) {
+	}
+
 	// common default values, OK to override or ignore
 	static constexpr float CvRangeVolts = 5.0f;
 	static constexpr float MaxOutputVolts = 8.0f;

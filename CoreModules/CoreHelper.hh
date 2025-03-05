@@ -46,9 +46,14 @@ struct CoreHelper {
 		return indices[element_index(EL)].light_idx;
 	}
 
-	template<typename T>
-	static constexpr auto get_as(Elem el)
+	template<Elem EL>
+	static constexpr uint8_t display_index() requires(count(EL).num_lights > 0)
 	{
+		return indices[element_index(EL)].light_idx;
+	}
+
+	template<typename T>
+	static constexpr auto get_as(Elem el) {
 		auto idx = element_index(el);
 		return std::get_if<T>(&INFO::Elements[idx]);
 	}
