@@ -53,6 +53,7 @@ public:
 	// Initialize graphics for a display.
 	// This is called by the GUI engine to inform the module that a GraphicDisplay element is now being show on screen.
 	// Typically you will use this to initialize a canvas.
+	//
 	// This is called in the GUI context, so it's OK to allocate memory.
 	//
 	// Parameters:
@@ -64,11 +65,13 @@ public:
 	}
 
 	// Write pixel data to the display's pixel buffer.
-	// The pixel buffer will have been previously passed to the module via show_graphic_display()
-	// This is called in the GUI context, so it's OK to allocate memory.
+	// The pixel buffer will have been previously passed to the module via show_graphic_display().
+	// If you need to manually access the red, green, blue, and alpha values, use the helper class PixelRGBA in CoreModules/pixels.hh
+	//
+	// This is called in the GUI context.
 	//
 	// Return true if made changes, false if no pixels changed
-	virtual bool get_canvas_pixels(int display_id) {
+	virtual bool draw_graphic_display(int display_id) {
 		return false;
 	}
 
