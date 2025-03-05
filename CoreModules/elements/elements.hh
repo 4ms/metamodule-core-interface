@@ -40,6 +40,7 @@ using Element = std::variant<NullElement,
 
 							 TextDisplay,
 							 DynamicTextDisplay,
+							 DynamicGraphicDisplay,
 
 							 AltParamContinuous,
 							 AltParamChoice,
