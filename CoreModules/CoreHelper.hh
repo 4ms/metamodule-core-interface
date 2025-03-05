@@ -10,6 +10,10 @@ struct CoreHelper {
 
 	constexpr static auto indices = ElementCount::get_indices<INFO>();
 
+	constexpr static auto count() {
+		return ElementCount::count<INFO>();
+	}
+
 	constexpr static auto element_index(Elem el) {
 		return static_cast<std::underlying_type_t<Elem>>(el);
 	}
