@@ -46,6 +46,9 @@ public:
 
 	virtual ~CoreProcessor() = default;
 
+	// Whether or not the module is bypassed.
+	// When bypassed, update() should simply pass inputs to outputs
+	// or mute outputs
 	bool bypassed{false};
 
 	uint32_t id{};
