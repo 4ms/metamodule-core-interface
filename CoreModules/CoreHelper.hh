@@ -61,6 +61,11 @@ struct CoreHelper {
 		auto idx = element_index(el);
 		return std::get_if<T>(&INFO::Elements[idx]);
 	}
+
+	static constexpr auto base_element(Elem el) {
+		auto idx = element_index(el);
+		return MetaModule::base_element(INFO::Elements[idx]);
+	}
 };
 
 } // namespace MetaModule
