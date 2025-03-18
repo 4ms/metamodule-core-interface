@@ -4,7 +4,7 @@
 #include <string>
 #include <string_view>
 
-typedef struct lv_canvas_t lv_canvas_t;
+typedef struct _lv_obj_t lv_obj_t;
 
 class CoreProcessor {
 public:
@@ -68,7 +68,7 @@ public:
 	// lvgl_canvas: an opaque pointer referring to the drawing context. Safe to ignore. Useful if you are using LVGL to draw.
 	//
 	virtual void
-	show_graphic_display(int display_id, std::span<uint32_t> pix_buffer, unsigned width, lv_canvas_t *lvgl_canvas) {
+	show_graphic_display(int display_id, std::span<uint32_t> pix_buffer, unsigned width, lv_obj_t *lvgl_canvas) {
 	}
 
 	// Write pixel data to the display's pixel buffer.
