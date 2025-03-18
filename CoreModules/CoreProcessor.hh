@@ -4,6 +4,8 @@
 #include <string>
 #include <string_view>
 
+typedef struct lv_canvas_t lv_canvas_t;
+
 class CoreProcessor {
 public:
 	CoreProcessor() = default;
@@ -62,9 +64,11 @@ public:
 	// Parameters:
 	// display_id: the ID of the display (e.g. CoreHelper<Info>::display_index<Elem::MyDisplay>() )
 	// pix_buffer: the buffer to which you should write the pixels when `get_canvas_pixels()` is called (RGBA8888)
-	// width, height: the dimensions of the buffer, in pixels. width*height == pixel_buffer.size()
+	// width: the dimensions of the buffer, in pixels. Note: height = pixel_buffer.size() / width
+	// lvgl_canvas: an opaque pointer referring to the drawing context. Safe to ignore. Useful if you are using LVGL to draw.
 	//
-	virtual void show_graphic_display(int display_id, std::span<uint32_t> pix_buffer, uint16_t width, uint16_t height) {
+	virtual void
+	show_graphic_display(int display_id, std::span<uint32_t> pix_buffer, unsigned width, lv_canvas_t *lvgl_canvas) {
 	}
 
 	// Write pixel data to the display's pixel buffer.
