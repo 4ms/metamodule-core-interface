@@ -29,4 +29,12 @@ bool register_module(std::string_view brand_name, std::string_view module_slug,
       ModuleInfoView::makeView<ModuleInfoT>(), faceplate_filename);
 }
 
+template <typename ModuleT, typename ModuleInfoT>
+bool register_module(std::string_view brand_name) {
+  return register_module(
+      brand_name, ModuleInfoT::slug,
+      []() { return std::make_unique<ModuleT>(); },
+      ModuleInfoView::makeView<ModuleInfoT>(), ModuleInfoT::png_filename);
+}
+
 } // namespace MetaModule
