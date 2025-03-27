@@ -88,4 +88,3 @@ bool register_module(std::string_view brand_name,
 
 } // namespace MetaModule
 
-__attribute__((__visibility__("default"))) void init();
