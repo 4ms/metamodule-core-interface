@@ -39,5 +39,4 @@ bool register_module(std::string_view brand_name) {
 
 } // namespace MetaModule
 
-extern "C" __attribute__((__visibility__("default"))) void init();
-
+__attribute__((__visibility__("default"))) void init();
