@@ -10,6 +10,10 @@ struct CoreHelper {
 
 	constexpr static auto indices = ElementCount::get_indices<INFO>();
 
+	constexpr static auto count() {
+		return ElementCount::count<INFO>();
+	}
+
 	constexpr static auto element_index(Elem el) {
 		return static_cast<std::underlying_type_t<Elem>>(el);
 	}
@@ -46,11 +50,21 @@ struct CoreHelper {
 		return indices[element_index(EL)].light_idx;
 	}
 
-	template<typename T>
-	static constexpr auto get_as(Elem el)
+	template<Elem EL>
+	static constexpr uint8_t display_index() requires(count(EL).num_lights > 0)
 	{
+		return indices[element_index(EL)].light_idx;
+	}
+
+	template<typename T>
+	static constexpr auto get_as(Elem el) {
 		auto idx = element_index(el);
 		return std::get_if<T>(&INFO::Elements[idx]);
+	}
+
+	static constexpr auto base_element(Elem el) {
+		auto idx = element_index(el);
+		return MetaModule::base_element(INFO::Elements[idx]);
 	}
 };
 
