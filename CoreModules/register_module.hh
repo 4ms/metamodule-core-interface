@@ -23,7 +23,10 @@ namespace MetaModule
 //
 // If you are using the rack-interface to port a plugin from VCV Rack, then calling
 // `pluginInstance->addModel(myModel)` will call register_module for you.
+//
 
+// This an internally used type (factory function):
+//
 using CreateModuleFunc = std::function<std::unique_ptr<CoreProcessor>()>;
 
 //
@@ -84,14 +87,6 @@ bool register_module(std::string_view brand_name,
 					 std::string_view faceplate_filename) {
 	return register_module(
 		brand_name, module_slug, []() { return std::make_unique<ModuleT>(); }, info, faceplate_filename);
-}
-
-template <typename ModuleT, typename ModuleInfoT>
-bool register_module(std::string_view brand_name) {
-  return register_module(
-      brand_name, ModuleInfoT::slug,
-      []() { return std::make_unique<ModuleT>(); },
-      ModuleInfoView::makeView<ModuleInfoT>(), ModuleInfoT::png_filename);
 }
 
 } // namespace MetaModule
