@@ -26,19 +26,19 @@ struct Counts {
 };
 
 struct Indices {
-	uint8_t param_idx = 0;
-	uint8_t light_idx = 0;
-	uint8_t input_idx = 0;
-	uint8_t output_idx = 0;
+	uint16_t param_idx = 0;
+	uint16_t light_idx = 0;
+	uint16_t input_idx = 0;
+	uint16_t output_idx = 0;
 
-	static constexpr uint8_t NoElementMarker = 0xFF;
+	static constexpr uint16_t NoElementMarker = 0xFFFF;
 
 	// Indices + Counts -> Indices
 	constexpr Indices operator+(const Counts rhs) {
-		return {static_cast<uint8_t>(param_idx + rhs.num_params),
-				static_cast<uint8_t>(light_idx + rhs.num_lights),
-				static_cast<uint8_t>(input_idx + rhs.num_inputs),
-				static_cast<uint8_t>(output_idx + rhs.num_outputs)};
+		return {static_cast<uint16_t>(param_idx + rhs.num_params),
+				static_cast<uint16_t>(light_idx + rhs.num_lights),
+				static_cast<uint16_t>(input_idx + rhs.num_inputs),
+				static_cast<uint16_t>(output_idx + rhs.num_outputs)};
 	}
 
 	bool operator==(const Indices &rhs) const = default;
