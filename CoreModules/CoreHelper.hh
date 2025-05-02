@@ -26,35 +26,51 @@ struct CoreHelper {
 	constexpr static ElementCount::Indices index(Elem el) {
 		return indices[element_index(el)];
 	}
+
 	template<Elem EL>
-	static constexpr uint8_t param_index() requires(count(EL).num_params > 0)
+	static constexpr auto param_index() requires(count(EL).num_params > 0)
 	{
 		return indices[element_index(EL)].param_idx;
 	}
 
 	template<Elem EL>
-	static constexpr uint8_t input_index() requires(count(EL).num_inputs > 0)
+	static constexpr auto param_idx = param_index<EL>();
+
+	template<Elem EL>
+	static constexpr auto input_index() requires(count(EL).num_inputs > 0)
 	{
 		return indices[element_index(EL)].input_idx;
 	}
 
 	template<Elem EL>
-	static constexpr uint8_t output_index() requires(count(EL).num_outputs > 0)
+	static constexpr auto input_idx = input_index<EL>();
+
+	template<Elem EL>
+	static constexpr auto output_index() requires(count(EL).num_outputs > 0)
 	{
 		return indices[element_index(EL)].output_idx;
 	}
 
 	template<Elem EL>
-	static constexpr uint8_t first_light_index() requires(count(EL).num_lights > 0)
+	static constexpr auto output_idx = output_index<EL>();
+
+	template<Elem EL>
+	static constexpr auto first_light_index() requires(count(EL).num_lights > 0)
 	{
 		return indices[element_index(EL)].light_idx;
 	}
 
 	template<Elem EL>
-	static constexpr uint8_t display_index() requires(count(EL).num_lights > 0)
+	static constexpr auto light_idx = output_index<EL>();
+
+	template<Elem EL>
+	static constexpr auto display_index() requires(count(EL).num_lights > 0)
 	{
 		return indices[element_index(EL)].light_idx;
 	}
+
+	template<Elem EL>
+	static constexpr auto display_idx = output_index<EL>();
 
 	template<typename T>
 	static constexpr auto get_as(Elem el) {
