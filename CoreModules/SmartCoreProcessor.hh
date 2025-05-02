@@ -1,4 +1,5 @@
 #pragma once
+#include "CoreModules/CoreHelper.hh"
 #include "CoreModules/CoreProcessor.hh"
 #include "CoreModules/elements/element_counter.hh"
 #include "CoreModules/elements/element_state_conversion.hh"
@@ -9,7 +10,7 @@ namespace MetaModule
 {
 
 template<typename INFO>
-class SmartCoreProcessor : public CoreProcessor {
+class SmartCoreProcessor : public CoreProcessor, public CoreHelper<INFO> {
 	using Elem = typename INFO::Elem;
 
 	constexpr static auto element_index(Elem el) {
