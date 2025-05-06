@@ -62,7 +62,7 @@ public:
 	// This is called in the GUI context, so it's OK to allocate memory.
 	//
 	// Parameters:
-	// display_id: the ID of the display (e.g. CoreHelper<Info>::display_index<Elem::MyDisplay>() )
+	// display_id: the ID of the display (e.g. display_idx<MyDisplay> )
 	// pix_buffer: the buffer to which you should write the pixels when `get_canvas_pixels()` is called (RGBA8888)
 	// width: the dimensions of the buffer, in pixels. Note: height = pixel_buffer.size() / width
 	// lvgl_canvas: an opaque pointer referring to the drawing context. Safe to ignore. Useful if you are using LVGL to draw.
