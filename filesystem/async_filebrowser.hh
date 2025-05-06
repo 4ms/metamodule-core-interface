@@ -1,7 +1,6 @@
 #pragma once
-#include "../../metamodule-rack-interface/dep/include/osdialog.h"
+#include "osdialog_types.h"
 #include <functional>
-#include <string>
 #include <string_view>
 
 // There are multiple interfaces to achieve the same thing (opening up a file browser to save a file,
