@@ -78,7 +78,7 @@ struct Pot : ParamElement {
 	bool integral = false;
 	uint8_t display_precision = 0;
 	constexpr static size_t MaxPosNames = 16;
-	unsigned num_pos = 16;
+	unsigned num_pos = 0;
 	std::array<std::string_view, MaxPosNames> pos_names{};
 };
 
