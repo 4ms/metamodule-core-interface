@@ -114,6 +114,14 @@ protected:
 		}
 	}
 
+	template<Elem EL, typename VAL>
+	void setLED(VAL r, VAL g, VAL b) requires(count(EL).num_lights == 3)
+	{
+		setLEDRaw(EL, r, 0);
+		setLEDRaw(EL, g, 1);
+		setLEDRaw(EL, b, 2);
+	}
+
 private:
 	float getParamRaw(Elem el, size_t local_index = 0) {
 		auto idx = index(el);
