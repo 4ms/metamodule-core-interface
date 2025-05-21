@@ -13,13 +13,12 @@ template<typename INFO>
 class SmartCoreProcessor : public CoreProcessor, public CoreHelper<INFO> {
 	using Elem = typename INFO::Elem;
 
-	constexpr static auto element_index(Elem el) {
+	constexpr static auto element_num(Elem el) {
 		return static_cast<std::underlying_type_t<Elem>>(el);
 	}
 
 	constexpr static auto count(Elem el) {
-		auto element_idx = element_index(el);
-		return ElementCount::count(INFO::Elements[element_idx]);
+		return ElementCount::count(INFO::Elements[element_num(el)]);
 	}
 
 protected:
@@ -72,8 +71,7 @@ protected:
 	auto getState() requires(count(EL).num_params > 0)
 	{
 		// get back the typed element from the list of elements
-		constexpr auto elementID = element_index(EL);
-		constexpr auto &elementRef = INFO::Elements[elementID];
+		constexpr auto &elementRef = INFO::Elements[element_num(EL)];
 
 		// reconstruct the element with its original type
 		constexpr auto variantIndex = elementRef.index();
@@ -99,8 +97,7 @@ protected:
 	void setLED(const VAL &value) requires(count(EL).num_lights > 0)
 	{
 		// get back the typed element from the list of elements
-		constexpr auto elementID = static_cast<size_t>(EL);
-		constexpr auto &elementRef = INFO::Elements[elementID];
+		constexpr auto &elementRef = INFO::Elements[element_num(EL)];
 
 		// reconstruct the element with its original type
 		constexpr auto variantIndex = elementRef.index();
@@ -140,8 +137,8 @@ private:
 	constexpr static auto indices = ElementCount::get_indices<INFO>();
 
 	constexpr static auto index(Elem el) {
-		auto element_idx = element_index(el);
-		return (size_t)element_idx < indices.size() ? indices[element_idx] : ElementCount::NoElementIndices;
+		auto el_num = element_num(el);
+		return (size_t)el_num < indices.size() ? indices[el_num] : ElementCount::NoElementIndices;
 	}
 
 public:
