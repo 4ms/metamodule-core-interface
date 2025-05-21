@@ -63,6 +63,13 @@ constexpr AltParamChoice::State_t convertState(const T &element, float val)
 	return AltParamChoice::State_t(std::round(val * (float)(element.num_pos - 1)));
 }
 
+template<typename T>
+constexpr AltParamAction::State_t convertState(const T &element, float val)
+	requires(std::derived_from<T, AltParamAction>)
+{
+	return val > 0.5f;
+}
+
 //
 // LEDs
 //
