@@ -70,7 +70,7 @@ struct CoreHelper {
 	}
 
 	template<Elem EL>
-	static constexpr auto display_idx = output_index<EL>();
+	static constexpr auto display_idx = display_index<EL>();
 
 	template<typename T>
 	static constexpr auto get_as(Elem el) {
