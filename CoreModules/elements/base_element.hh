@@ -219,6 +219,11 @@ struct AltParamChoice : AltParamElement {
 	State_t default_value = 0;
 };
 
+struct AltParamAction : AltParamElement {
+	// clicking this performs an action
+	using State_t = bool;
+};
+
 struct AltParamChoiceLabeled : AltParamChoice {
 	static constexpr size_t MaxChoices = 8;
 	std::array<std::string_view, MaxChoices> pos_names{};
