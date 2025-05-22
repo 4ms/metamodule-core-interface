@@ -195,6 +195,8 @@ struct TextDisplay : LightElement {
 	std::string_view text = "";
 	std::string_view font = "";
 	RGB565 color = Colors565::Grey;
+	enum class WrapMode { Clip, Wrap, Scroll, ScrollBounce };
+	WrapMode wrap_mode = WrapMode::Clip;
 };
 
 struct DynamicTextDisplay : TextDisplay {
