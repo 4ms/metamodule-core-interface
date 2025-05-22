@@ -67,6 +67,15 @@ protected:
 			return std::nullopt;
 	}
 
+	// TODO: something like this since we never have num_params > 1
+	// template<Elem EL>
+	// auto getState() requires(count(EL).num_params == 1)
+	// {
+	// 	auto raw = getParamRaw(EL);
+	// 	return std::visit([&raw](auto const &el) { return StateConversion::convertState(el, raw); },
+	// 					  INFO::Elements[element_num(EL)]);
+	// }
+
 	template<Elem EL>
 	auto getState() requires(count(EL).num_params > 0)
 	{
@@ -93,6 +102,9 @@ protected:
 		}
 	}
 
+	// TODO: make overloads for setLED, matching on various types of LEDs or requiring NumLight values
+	// Each overload converts the values and directly writes setLEDRaw (or ledValues[])
+	// Then we don't need convertLED
 	template<Elem EL, typename VAL>
 	void setLED(const VAL &value) requires(count(EL).num_lights > 0)
 	{
@@ -109,14 +121,6 @@ protected:
 		for (std::size_t i = 0; i < rawValues.size(); i++) {
 			setLEDRaw(EL, rawValues[i], i);
 		}
-	}
-
-	template<Elem EL, typename VAL>
-	void setLED(VAL r, VAL g, VAL b) requires(count(EL).num_lights == 3)
-	{
-		setLEDRaw(EL, r, 0);
-		setLEDRaw(EL, g, 1);
-		setLEDRaw(EL, b, 2);
 	}
 
 private:
