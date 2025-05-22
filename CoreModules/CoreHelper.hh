@@ -84,4 +84,11 @@ struct CoreHelper {
 	}
 };
 
+// Safely copy `message` to `dst`, without exceeding the bounds of `dst`
+static constexpr size_t copy_text(std::string_view message, std::span<char> dst) {
+	size_t chars_to_copy = std::min(dst.size(), message.size());
+	std::copy(message.data(), message.data() + chars_to_copy, dst.begin());
+	return chars_to_copy;
+}
+
 } // namespace MetaModule
