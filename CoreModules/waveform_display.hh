@@ -20,28 +20,47 @@ public:
 	}
 
 	void set_cursor_position(float pos) {
-		this->cursor_pos = pos;
+		cursor_pos = pos;
 	}
 
 	// sample should range from -1 to +1
+	float max = 0;
 	void draw_sample(float sample) {
+		max = std::max(std::abs(max), std::abs(sample)) * ((sample < 0) ? -1 : 1);
 		if (++x_zoom_ctr > x_zoom) {
 			x_zoom_ctr = 0;
 			auto t = newest_sample.load();
 
 			if (++t >= (int)samples.size())
 				t = 0;
-			samples[t] = sample;
+			samples[t] = max;
+			max = 0;
 
 			newest_sample.store(t);
 		}
+	}
+
+	void sync() {
+		std::ranges::fill(samples, 0);
+		newest_sample = 0;
 	}
 
 	void set_x_zoom(unsigned zoom) {
 		x_zoom = zoom;
 	}
 
-	// Function below here run in the GUI thread and may get interrupted by the functions above
+	void set_wave_color(uint8_t r, uint8_t g, uint8_t b) {
+		wave_r = r;
+		wave_g = g;
+		wave_b = b;
+	}
+	void set_bar_color(uint8_t r, uint8_t g, uint8_t b) {
+		bar_r = r;
+		bar_g = g;
+		bar_b = b;
+	}
+
+	// Functions below here run in the GUI thread and may get interrupted by the functions above
 
 	void show_graphic_display(std::span<uint32_t> pix_buffer, unsigned width, lv_obj_t *lvgl_canvas) {
 		canvas = tvg::SwCanvas::gen();
@@ -52,28 +71,30 @@ public:
 		scaling = float(width) / display_width;
 		scene->scale(scaling);
 
-		bar = tvg::Shape::gen();
+		// Bar to represent entire sample
+		auto bar = tvg::Shape::gen();
 		bar->appendRect(0, display_height - bar_height, display_width, bar_height);
-		bar->fill(0xF0, 0x80, 0x00, 0xFF);
+		bar->fill(bar_r, bar_g, bar_b, 0xFF);
 		scene->push(bar);
 
+		// Trolley to indicate position
 		bar_cursor = tvg::Shape::gen();
 		bar_cursor->appendRect(0, display_height - bar_height, cursor_width, bar_height);
 		bar_cursor->fill(0xFF, 0xFF, 0xFF, 0xFF);
 		scene->push(bar_cursor);
 
-		wave_bg = tvg::Shape::gen();
+		// Black background
+		auto wave_bg = tvg::Shape::gen();
 		wave_bg->appendRect(0, 0, display_width, display_height - bar_height);
 		wave_bg->fill(0x00, 0x00, 0x00, 0xFF);
 		scene->push(wave_bg);
 
+		// Waveform
 		wave = tvg::Shape::gen();
-		// wave->appendRect(0, -display_height / 2, display_width, display_height / 2);
-		// wave->fill(0x00, 0x00, 0x00, 0xFF);
 		wave->moveTo(display_width, 0);
 		wave->lineTo(0, 0);
-		wave->strokeFill(0xFF, 0xFF, 0, 0xFF);
-		wave->strokeWidth(0.5f);
+		wave->strokeFill(wave_r, wave_g, wave_b, 0xFF);
+		wave->strokeWidth(1.0f);
 		wave->translate(0, scaling * (display_height - bar_height) / 2);
 		scene->push(wave);
 
@@ -91,21 +112,22 @@ public:
 		canvas->update(bar_cursor);
 
 		wave->reset();
-		// wave->appendRect(0, -wave_height, display_width, wave_height * 2);
-		// wave->fill(0x00, 0x00, 0x00, 0xFF);
 
-		float start = newest_sample.load();
+		//start with the oldest sample
+		int i = newest_sample.load() + 1;
 
-		int i = start;
-		// for (int x = samples.size() - 1; x >= 0; x--) {
 		for (auto x = 0u; x < samples.size(); x++) {
 			if (x == 0)
 				wave->moveTo(x, samples[i] * wave_height);
-			else
+			else {
 				wave->lineTo(x, samples[i] * wave_height);
+				// Fill the waveform with vertical lines:
+				wave->lineTo(x, 0);
+				wave->lineTo(x, samples[i] * wave_height);
+			}
 			i = (i + 1) % samples.size();
 		}
-		wave->strokeFill(0xFF, 0xFF, 0, 0xFF);
+		wave->strokeFill(wave_r, wave_g, wave_b, 0xFF);
 		canvas->update(wave);
 
 		canvas->draw();
@@ -123,20 +145,21 @@ public:
 
 private:
 	tvg::SwCanvas *canvas = nullptr;
-	tvg::Shape *bar = nullptr;
 	tvg::Shape *bar_cursor = nullptr;
 	tvg::Shape *wave = nullptr;
-	tvg::Shape *wave_bg = nullptr;
 
 	std::vector<float> samples;
 	std::atomic<int> newest_sample = 0;
 
 	float cursor_pos = 0;
-	float cursor_width = 10;
+	float cursor_width = 2;
 	float bar_height = 5;
 
 	unsigned x_zoom = 1;
 	unsigned x_zoom_ctr = 0;
+
+	uint8_t wave_r = 0, wave_g = 0xFF, wave_b = 0xFF;
+	uint8_t bar_r = 0xF0, bar_g = 0x88, bar_b = 0x00;
 
 	float scaling = 1;
 
