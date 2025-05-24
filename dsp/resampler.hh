@@ -12,7 +12,7 @@ namespace MetaModule
 class AudioResampler {
 public:
 	AudioResampler(uint32_t num_channels) {
-		num_chans = std::clamp(num_channels, 1u, MAX_RESAMPLER_CHANNELS);
+		num_chans = std::clamp<size_t>(num_channels, 1u, MAX_RESAMPLER_CHANNELS);
 
 		chans.resize(num_chans, Channel{});
 
