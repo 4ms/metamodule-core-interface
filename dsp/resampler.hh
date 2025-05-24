@@ -107,7 +107,7 @@ public:
 		return 0;
 	}
 
-	void set_sample_rate_out(uint32_t input_rate, uint32_t output_rate) {
+	void set_sample_rate_in_out(uint32_t input_rate, uint32_t output_rate) {
 		for (auto i = 0u; i < num_chans; i++) {
 			chans[i].ratio = (float)input_rate / (float)output_rate;
 		}
@@ -119,6 +119,10 @@ public:
 
 	void set_output_stride(uint32_t stride) {
 		output_stride = stride;
+	}
+
+	float ratio(unsigned chan) {
+		return chans[chan].ratio;
 	}
 
 private:
@@ -134,11 +138,40 @@ private:
 	};
 
 	static constexpr size_t MAX_RESAMPLER_CHANNELS = 16;
-
 	FixedVector<Channel, MAX_RESAMPLER_CHANNELS> chans;
 
 	unsigned input_stride = 1;
 	unsigned output_stride = 1;
 	size_t num_chans = 0;
 };
+
+// block size * maximum conversion ratio
+template<size_t NumChans, size_t MaxBlockSize>
+class ResamplingBuffer {
+
+	ResamplingBuffer() = default;
+
+	float process(unsigned chan, float input) {
+		if (core.ratio(chan) == 1.f)
+			return input;
+		else {
+			// TODO:
+
+			return 0;
+		}
+	}
+
+	float get_next(unsigned chan) {
+		return out_buff[chan].pop_back();
+	}
+
+	void set_sample_rate_in_out(uint32_t input_rate, uint32_t output_rate) {
+		core.set_sample_rate_in_out(input_rate, output_rate);
+	}
+
+	AudioResampler core{NumChans};
+	std::array<FixedVector<float, MaxBlockSize>, NumChans> in_buff;
+	std::array<FixedVector<float, MaxBlockSize>, NumChans> out_buff;
+};
+
 } // namespace MetaModule
