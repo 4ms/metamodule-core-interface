@@ -1,5 +1,4 @@
 #pragma once
-#include "util/circular_buffer.hh"
 #include "util/fixed_vector.hh"
 #include <algorithm>
 #include <cstdint>
@@ -10,9 +9,9 @@
 namespace MetaModule
 {
 
-class AudioResampler {
+class Resampler {
 public:
-	AudioResampler(uint32_t num_channels = 2) {
+	Resampler(uint32_t num_channels = 2) {
 		num_chans = std::clamp<size_t>(num_channels, 1u, MAX_RESAMPLER_CHANNELS);
 
 		chans.resize(num_chans, Channel{});
@@ -21,7 +20,7 @@ public:
 		output_stride = static_cast<uint8_t>(num_chans);
 	}
 
-	~AudioResampler() = default;
+	~Resampler() = default;
 
 	int process(uint32_t channel_index, std::span<const float> &in, std::span<float> &out) {
 		if (channel_index >= num_chans)
@@ -29,26 +28,31 @@ public:
 
 		Channel &chan = chans[channel_index];
 
+		auto in_size = in.size() + channel_index;
+		auto out_size = out.size() + channel_index;
+
 		if (chan.ratio == 1.f) {
 			// copy with strides
-			auto j = 0;
-			for (auto i = 0u, o = 0u; i < in.size() && o < out.size(); i += input_stride, o += output_stride) {
+			unsigned i = 0;
+			unsigned o = 0;
+			for (; i < in_size && o < out_size; i += input_stride, o += output_stride) {
 				out[o] = in[i];
-				j++;
 			}
+			out = out.subspan(0, o);
+			in = in.subspan(0, i);
 			return 0;
 		}
 
 		uint32_t inpos = 0;
 
 		auto get_next_in = [&](float &next) {
-			if (inpos < in.size()) {
+			if (inpos < in_size) {
 				next = in[inpos];
 				inpos += input_stride;
 			}
 		};
 
-		if (chan.flush && in.size() >= 3) {
+		if (chan.flush && in_size >= 3) {
 			chan.flush = false;
 			chan.xm1 = 0;
 			get_next_in(chan.x0);
@@ -59,10 +63,10 @@ public:
 
 		uint32_t outpos = 0;
 
-		while (outpos < out.size() && inpos < in.size()) {
+		while (outpos < out_size && inpos < in_size) {
 
 			// Optimize for resample rates >= 2
-			if (chan.fractional_pos >= 2.f && (inpos + 2) <= in.size()) {
+			if (chan.fractional_pos >= 2.f && (inpos + 2) <= in_size) {
 				chan.fractional_pos = chan.fractional_pos - 2.f;
 
 				// shift samples back two
@@ -74,7 +78,7 @@ public:
 			}
 
 			// Optimize for resample rates >= 1
-			if (chan.fractional_pos >= 1.f && (inpos + 1) <= in.size()) {
+			if (chan.fractional_pos >= 1.f && (inpos + 1) <= in_size) {
 				chan.fractional_pos = chan.fractional_pos - 1.f;
 
 				// shift samples back one
@@ -91,7 +95,7 @@ public:
 			float c = (chan.x1 - chan.xm1) / 2;
 
 			// calculate as many fractionally placed output points as we need
-			while (chan.fractional_pos < 1.f && outpos < out.size()) {
+			while (chan.fractional_pos < 1.f && outpos < out_size) {
 				out[outpos] =
 					(((a * chan.fractional_pos) + b) * chan.fractional_pos + c) * chan.fractional_pos + chan.x0;
 				outpos += output_stride;
@@ -100,6 +104,10 @@ public:
 			}
 		}
 
+		if (outpos >= out_size)
+			outpos = out_size - output_stride;
+		if (inpos >= in_size)
+			inpos = in_size - input_stride;
 		out = out.subspan(0, outpos); // / output_stride);
 		in = in.subspan(0, inpos);	  // / input_stride);
 
@@ -144,97 +152,37 @@ private:
 	size_t num_chans = 0;
 };
 
-// block size * maximum conversion ratio
-template<size_t NumChans, size_t MaxBlockSize>
-class ResamplingRingBuffer {
+// Helper class for using AudioResampler
+template<size_t MaxChans, size_t MaxBlockSize, size_t MaxResampleRatio>
+class ResamplingInterleavedBuffer {
 public:
-	ResamplingRingBuffer() = default;
+	ResamplingInterleavedBuffer() = default;
 
-	void push(unsigned chan, std::span<const float> input) {
-		printf("rs: %f, [%u] push %zu\n", core.ratio(chan), chan, input.size());
+	std::span<float> process_block(unsigned num_chans, std::span<const float> input) {
+		core.set_input_stride(num_chans);
+		core.set_output_stride(num_chans);
 
-		// out_buff[chan].clear();
-		// bool ok = out_buff[chan].resize_for_overwrite(input.size() / core.ratio(chan));
-		// printf("req %zu ", out_buff[chan].size());
-		// if (!ok)
-		// 	printf("Error: resampling output buffer too small: need %f\n", input.size() / core.ratio(chan));
+		size_t output_size = 0;
 
-		// auto output = out_buff[chan].span();
+		for (auto chan = 0u; chan < num_chans; chan++) {
+			auto output = std::span<float>{out_buff};
+			auto input_chan = input.subspan(chan);
+			auto output_chan = output.subspan(chan);
+			core.process(chan, input_chan, output_chan);
 
-		read_size = input.size() / core.ratio(chan);
-		auto output = std::span{&out_buff[chan], read_size};
-
-		auto err = core.process(chan, input, output);
-
-		if (err < 0)
-			printf("Error: resampling failed\n");
-
-		for (auto i = 0u; i < read_size; i += NumChans) {
-			if (output[i] != input[i])
-				printf("%f != %f\n", output[i], input[i]);
+			output_size = output_chan.size();
 		}
 
-		read_size = output.size() * NumChans;
-		read_idx = 0;
-		printf("got %zu\n", output.size());
+		return std::span<float>{out_buff.data(), output_size};
 	}
 
-	float pop() {
-		if (read_idx <= read_size)
-			return out_buff[read_idx++];
-		else {
-			printf("%zu >= %zu\n", read_idx, read_size);
-			return 0;
-		}
-	}
-
-	void set_sample_rate_in_out(uint32_t input_rate, uint32_t output_rate) {
+	void set_sample_ate_in_out(uint32_t input_rate, uint32_t output_rate) {
 		core.set_sample_rate_in_out(input_rate, output_rate);
 	}
 
 private:
-	AudioResampler core{NumChans};
-	// std::array<FixedVector<float, MaxBlockSize>, NumChans> out_buff;
-	std::array<float, MaxBlockSize * NumChans> out_buff;
-
-	size_t read_idx{};
-	size_t read_size{};
+	Resampler core{MaxChans};
+	std::array<float, MaxBlockSize * MaxChans> out_buff;
 };
-
-// Usage:
-// if (resampler.needs_input()) {
-// 	   left = resampler.process(0, stream.pop_sample());
-// 	   right = stream.is_stereo() ? resampler.process(1, stream.pop_sample()) : left;
-// } else {
-//     left = resampler.get_next(0);
-//     right = stream.is_stere() ? resampler.get_next(1) : left;
-// }
-// template<size_t NumChans, size_t MaxBlockSize>
-// class ResamplingBuffer {
-
-// 	ResamplingBuffer() = default;
-
-// 	float process(unsigned chan, float input) {
-// 		if (core.ratio(chan) == 1.f)
-// 			return input;
-// 		else {
-// 			// TODO:
-
-// 			return 0;
-// 		}
-// 	}
-
-// 	float get_next(unsigned chan) {
-// 		return out_buff[chan].pop_front();
-// 	}
-
-// 	void set_sample_rate_in_out(uint32_t input_rate, uint32_t output_rate) {
-// 		core.set_sample_rate_in_out(input_rate, output_rate);
-// 	}
-
-// 	AudioResampler core{NumChans};
-// 	std::array<FixedVector<float, MaxBlockSize>, NumChans> in_buff;
-// 	std::array<FixedVector<float, MaxBlockSize>, NumChans> out_buff;
-// };
 
 } // namespace MetaModule
