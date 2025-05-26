@@ -22,25 +22,24 @@ public:
 
 	~Resampler() = default;
 
-	int process(uint32_t channel_index, std::span<const float> &in, std::span<float> &out) {
+	size_t process(uint32_t channel_index, std::span<const float> in, std::span<float> out) {
 		if (channel_index >= num_chans)
-			return -1;
+			return 0;
 
 		Channel &chan = chans[channel_index];
 
-		auto in_size = in.size() + channel_index;
-		auto out_size = out.size() + channel_index;
+		auto in_size = in.size();
+		auto out_size = out.size();
+		in = in.subspan(channel_index);
+		out = out.subspan(channel_index);
 
 		if (chan.ratio == 1.f) {
 			// copy with strides
-			unsigned i = 0;
-			unsigned o = 0;
-			for (; i < in_size && o < out_size; i += input_stride, o += output_stride) {
+			auto o = 0u;
+			for (auto i = 0u; i < in_size && o < out_size; i += input_stride, o += output_stride) {
 				out[o] = in[i];
 			}
-			out = out.subspan(0, o);
-			in = in.subspan(0, i);
-			return 0;
+			return o;
 		}
 
 		uint32_t inpos = 0;
@@ -58,16 +57,28 @@ public:
 			get_next_in(chan.x0);
 			get_next_in(chan.x1);
 			get_next_in(chan.x2);
-			chan.fractional_pos = 0.0;
+			chan.frac_pos = 0.0;
 		}
 
 		uint32_t outpos = 0;
 
 		while (outpos < out_size && inpos < in_size) {
 
+			// Optimize for resample rates >= 3
+			if (chan.frac_pos >= 3.f && (inpos + 3) <= in_size) {
+				chan.frac_pos = chan.frac_pos - 3.f;
+
+				// shift samples back three
+				// and read a new sample
+				chan.xm1 = chan.x1;
+				get_next_in(chan.x0);
+				get_next_in(chan.x1);
+				get_next_in(chan.x2);
+			}
+
 			// Optimize for resample rates >= 2
-			if (chan.fractional_pos >= 2.f && (inpos + 2) <= in_size) {
-				chan.fractional_pos = chan.fractional_pos - 2.f;
+			if (chan.frac_pos >= 2.f && (inpos + 2) <= in_size) {
+				chan.frac_pos = chan.frac_pos - 2.f;
 
 				// shift samples back two
 				// and read a new sample
@@ -78,8 +89,8 @@ public:
 			}
 
 			// Optimize for resample rates >= 1
-			if (chan.fractional_pos >= 1.f && (inpos + 1) <= in_size) {
-				chan.fractional_pos = chan.fractional_pos - 1.f;
+			if (chan.frac_pos >= 1.f && (inpos + 1) <= in_size) {
+				chan.frac_pos = chan.frac_pos - 1.f;
 
 				// shift samples back one
 				// and read a new sample
@@ -95,28 +106,28 @@ public:
 			float c = (chan.x1 - chan.xm1) / 2;
 
 			// calculate as many fractionally placed output points as we need
-			while (chan.fractional_pos < 1.f && outpos < out_size) {
-				out[outpos] =
-					(((a * chan.fractional_pos) + b) * chan.fractional_pos + c) * chan.fractional_pos + chan.x0;
+			while (chan.frac_pos < 1.f && outpos < out_size) {
+				out[outpos] = (((a * chan.frac_pos) + b) * chan.frac_pos + c) * chan.frac_pos + chan.x0;
 				outpos += output_stride;
 
-				chan.fractional_pos += chan.ratio;
+				chan.frac_pos += chan.ratio;
 			}
 		}
 
-		if (outpos >= out_size)
-			outpos = out_size - output_stride;
-		if (inpos >= in_size)
-			inpos = in_size - input_stride;
-		out = out.subspan(0, outpos); // / output_stride);
-		in = in.subspan(0, inpos);	  // / input_stride);
+		// if (outpos >= out_size)
+		// 	outpos = out_size - output_stride;
 
-		return 0;
+		return outpos - output_stride; //index of last output written
 	}
 
 	void set_sample_rate_in_out(uint32_t input_rate, uint32_t output_rate) {
-		for (auto i = 0u; i < num_chans; i++) {
-			chans[i].ratio = (float)input_rate / (float)output_rate;
+		for (auto &chan : chans) {
+			auto cur_ratio = (float)input_rate / (float)output_rate;
+
+			if (chan.ratio != cur_ratio) {
+				chan.ratio = (float)input_rate / (float)output_rate;
+				chan.flush = true;
+			}
 		}
 	}
 
@@ -132,12 +143,18 @@ public:
 		return chans[chan].ratio;
 	}
 
+	void flush() {
+		for (auto &chan : chans) {
+			chan.flush = true;
+		}
+	}
+
 private:
 	struct Channel {
 		float ratio = 1;
 		bool flush{true};
 
-		float fractional_pos{};
+		float frac_pos{};
 		float xm1{};
 		float x0{};
 		float x1{};
@@ -162,22 +179,22 @@ public:
 		core.set_input_stride(num_chans);
 		core.set_output_stride(num_chans);
 
-		size_t output_size = 0;
+		auto output = std::span<float>{out_buff};
+		auto output_size = 0u;
 
 		for (auto chan = 0u; chan < num_chans; chan++) {
-			auto output = std::span<float>{out_buff};
-			auto input_chan = input.subspan(chan);
-			auto output_chan = output.subspan(chan);
-			core.process(chan, input_chan, output_chan);
-
-			output_size = output_chan.size();
+			output_size = core.process(chan, input, output);
 		}
 
-		return std::span<float>{out_buff.data(), output_size};
+		return output.subspan(0, output_size);
 	}
 
-	void set_sample_ate_in_out(uint32_t input_rate, uint32_t output_rate) {
+	void set_samplerate_in_out(uint32_t input_rate, uint32_t output_rate) {
 		core.set_sample_rate_in_out(input_rate, output_rate);
+	}
+
+	void flush() {
+		core.flush();
 	}
 
 private:
