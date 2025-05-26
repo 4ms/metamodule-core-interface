@@ -199,7 +199,7 @@ public:
 
 private:
 	Resampler core{MaxChans};
-	std::array<float, MaxBlockSize * MaxChans> out_buff;
+	std::array<float, MaxBlockSize * MaxChans * MaxResampleRatio> out_buff;
 };
 
 } // namespace MetaModule
