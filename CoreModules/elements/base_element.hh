@@ -75,11 +75,8 @@ struct Pot : ParamElement {
 	float display_mult = 1.f;
 	float display_offset = 0.f;
 	std::string_view units = "";
-	bool integral = false;
+	bool unused = false;
 	uint8_t display_precision = 0;
-	constexpr static size_t MaxPosNames = 32;
-	unsigned num_pos = 0;
-	std::array<std::string_view, MaxPosNames> pos_names{};
 };
 
 struct Knob : Pot {
@@ -88,6 +85,10 @@ struct Knob : Pot {
 	float min_angle = -135.f;
 	// How much to rotate the image when param val == 1
 	float max_angle = 135.f;
+
+	constexpr static size_t MaxPosNames = 32;
+	unsigned num_pos = 0;
+	std::array<std::string_view, MaxPosNames> pos_names{};
 };
 
 struct Slider : Pot {
