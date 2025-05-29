@@ -86,7 +86,7 @@ struct Knob : Pot {
 	// How much to rotate the image when param val == 1
 	float max_angle = 135.f;
 
-	constexpr static size_t MaxPosNames = 32;
+	constexpr static size_t MaxPosNames = 15;
 	unsigned num_pos = 0;
 	std::array<std::string_view, MaxPosNames> pos_names{};
 };
