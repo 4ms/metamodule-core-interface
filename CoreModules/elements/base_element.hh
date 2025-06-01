@@ -201,6 +201,7 @@ struct DynamicTextDisplay : TextDisplay {
 
 struct DynamicGraphicDisplay : LightElement {
 	static constexpr size_t NumLights = 1;
+	bool full_module = false;
 };
 
 // AltParams:
