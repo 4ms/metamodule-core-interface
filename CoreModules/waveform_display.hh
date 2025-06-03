@@ -117,13 +117,14 @@ public:
 		int i = newest_sample.load() + 1;
 
 		for (auto x = 0u; x < samples.size(); x++) {
+			float x_pos = x * scaling;
 			if (x == 0)
-				wave->moveTo(x, samples[i] * wave_height);
+				wave->moveTo(x_pos, samples[i] * wave_height);
 			else {
-				wave->lineTo(x, samples[i] * wave_height);
+				wave->lineTo(x_pos, samples[i] * wave_height);
 				// Fill the waveform with vertical lines:
-				wave->lineTo(x, 0);
-				wave->lineTo(x, samples[i] * wave_height);
+				wave->lineTo(x_pos, 0);
+				wave->lineTo(x_pos, samples[i] * wave_height);
 			}
 			i = (i + 1) % samples.size();
 		}
