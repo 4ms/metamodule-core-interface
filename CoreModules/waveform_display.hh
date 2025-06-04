@@ -27,6 +27,7 @@ public:
 	// sample should range from -1 to +1
 	float max = 0;
 	void draw_sample(float sample) {
+		sample = std::clamp(sample, -1.f, 1.f);
 		max = std::max(std::abs(max), std::abs(sample)) * ((sample < 0) ? -1 : 1);
 		if (++x_zoom_ctr > x_zoom) {
 			x_zoom_ctr = 0;
@@ -92,11 +93,10 @@ public:
 
 		// Waveform
 		wave = tvg::Shape::gen();
-		wave->moveTo(display_width, 0);
-		wave->lineTo(0, 0);
+		wave->moveTo(display_width, wave_height);
+		wave->lineTo(0, wave_height);
 		wave->strokeFill(wave_r, wave_g, wave_b, 0xFF);
 		wave->strokeWidth(1.0f);
-		wave->translate(0, scaling * (display_height - bar_height) / 2);
 		scene->push(wave);
 
 		canvas->push(scene);
@@ -109,8 +109,7 @@ public:
 		if (!canvas)
 			return false;
 
-		// bar_cursor->translate(cursor_pos * (display_width - cursor_width) * scaling, scaling > 0.9f ? 0 : -10);
-		bar_cursor->translate(cursor_pos * (display_width - cursor_width) * scaling, 0);
+		bar_cursor->translate(scaling * cursor_pos * (display_width - cursor_width), 0);
 		bar_cursor->scale(scaling);
 		canvas->update(bar_cursor);
 
@@ -120,23 +119,23 @@ public:
 		int i = newest_sample.load() + 1;
 
 		for (auto x = 0u; x < samples.size(); x++) {
-			float x_pos = x * scaling;
-			float y_pos = samples[i] * wave_height * scaling;
+			float x_pos = (float)x * display_width / (float)samples.size();
+			float y_pos = samples[i] * wave_height + wave_height;
 			if (x == 0)
 				wave->moveTo(x_pos, y_pos);
 			else {
 				wave->lineTo(x_pos, y_pos);
 				// Fill the waveform with vertical lines:
-				if (scaling < 1.f) {
-					wave->lineTo(x_pos, 0);
-					wave->lineTo(x_pos, y_pos);
-				}
+				// wave->lineTo(x_pos, wave_height);
+				// wave->lineTo(x_pos, y_pos);
 			}
 			i = (i + 1) % samples.size();
 		}
+		wave->strokeWidth(1.0f / scaling);
 		wave->strokeFill(wave_r, wave_g, wave_b, 0xFF);
-		canvas->update(wave);
+		wave->scale(scaling);
 
+		canvas->update(wave);
 		canvas->draw();
 		canvas->sync();
 
@@ -159,8 +158,8 @@ private:
 	std::atomic<int> newest_sample = 0;
 
 	float cursor_pos = 0;
-	float cursor_width = 2;
-	float bar_height = 5;
+	float cursor_width = 1;
+	float bar_height = 3;
 
 	unsigned x_zoom = 1;
 	unsigned x_zoom_ctr = 0;
