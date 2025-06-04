@@ -11,12 +11,13 @@ namespace MetaModule
 
 class StreamingWaveformDisplay {
 public:
+	// TSP: (24mm, 23.4mm)
 	StreamingWaveformDisplay(float display_width_mm, float display_height_mm)
 		: display_width{mm_to_px(display_width_mm, 240)}
 		, display_height{mm_to_px(display_height_mm, 240)}
 		, wave_height{(display_height - bar_height) / 2.f} {
 
-		samples.resize(display_width);
+		samples.resize(320);
 	}
 
 	void set_cursor_position(float pos) {
@@ -73,13 +74,13 @@ public:
 
 		// Bar to represent entire sample
 		auto bar = tvg::Shape::gen();
-		bar->appendRect(0, display_height - bar_height, display_width, bar_height);
+		bar->appendRect(0, display_height - bar_height / scaling, display_width, bar_height / scaling);
 		bar->fill(bar_r, bar_g, bar_b, 0xFF);
 		scene->push(bar);
 
 		// Trolley to indicate position
 		bar_cursor = tvg::Shape::gen();
-		bar_cursor->appendRect(0, display_height - bar_height, cursor_width, bar_height);
+		bar_cursor->appendRect(0, display_height - bar_height / scaling, cursor_width, bar_height / scaling);
 		bar_cursor->fill(0xFF, 0xFF, 0xFF, 0xFF);
 		scene->push(bar_cursor);
 
@@ -108,7 +109,9 @@ public:
 		if (!canvas)
 			return false;
 
-		bar_cursor->translate(cursor_pos * (display_width - cursor_width) * scaling, scaling > 0.9f ? 0 : -10);
+		// bar_cursor->translate(cursor_pos * (display_width - cursor_width) * scaling, scaling > 0.9f ? 0 : -10);
+		bar_cursor->translate(cursor_pos * (display_width - cursor_width) * scaling, 0);
+		bar_cursor->scale(scaling);
 		canvas->update(bar_cursor);
 
 		wave->reset();
@@ -118,13 +121,16 @@ public:
 
 		for (auto x = 0u; x < samples.size(); x++) {
 			float x_pos = x * scaling;
+			float y_pos = samples[i] * wave_height * scaling;
 			if (x == 0)
-				wave->moveTo(x_pos, samples[i] * wave_height);
+				wave->moveTo(x_pos, y_pos);
 			else {
-				wave->lineTo(x_pos, samples[i] * wave_height);
+				wave->lineTo(x_pos, y_pos);
 				// Fill the waveform with vertical lines:
-				wave->lineTo(x_pos, 0);
-				wave->lineTo(x_pos, samples[i] * wave_height);
+				if (scaling < 1.f) {
+					wave->lineTo(x_pos, 0);
+					wave->lineTo(x_pos, y_pos);
+				}
 			}
 			i = (i + 1) % samples.size();
 		}
