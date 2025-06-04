@@ -44,7 +44,9 @@ using Element = std::variant<NullElement,
 
 							 AltParamContinuous,
 							 AltParamChoice,
-							 AltParamChoiceLabeled>;
+							 AltParamChoiceLabeled,
+
+							 KnobSnapped>;
 
 namespace
 {

@@ -91,6 +91,12 @@ struct Knob : Pot {
 	std::array<std::string_view, MaxPosNames> pos_names{};
 };
 
+struct KnobSnapped : Knob {
+	constexpr static size_t MaxPosNames = 15;
+	unsigned num_pos = 0;
+	std::array<std::string_view, MaxPosNames> pos_names{};
+};
+
 struct Slider : Pot {
 	std::string_view image_handle = "";
 };
