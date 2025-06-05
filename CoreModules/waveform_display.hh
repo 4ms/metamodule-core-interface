@@ -30,7 +30,9 @@ public:
 		oversample_min = std::min(oversample_min, sample);
 		oversample_max = std::max(oversample_max, sample);
 
-		if (++x_zoom_ctr > x_zoom) {
+		x_zoom_ctr += x_zoom;
+		if (x_zoom_ctr > 1.f) {
+			// if (++x_zoom_ctr > x_zoom) {
 			x_zoom_ctr = 0;
 
 			{
@@ -54,7 +56,7 @@ public:
 		newest_sample = 0;
 	}
 
-	void set_x_zoom(unsigned zoom) {
+	void set_x_zoom(float zoom) {
 		x_zoom = zoom;
 	}
 
@@ -174,8 +176,8 @@ private:
 	float cursor_width = 1;
 	float bar_height = 3;
 
-	unsigned x_zoom = 1;
-	unsigned x_zoom_ctr = 0;
+	float x_zoom = 1;
+	float x_zoom_ctr = 0;
 
 	uint8_t wave_r = 0, wave_g = 0xFF, wave_b = 0xFF;
 	uint8_t bar_r = 0xF0, bar_g = 0x88, bar_b = 0x00;
