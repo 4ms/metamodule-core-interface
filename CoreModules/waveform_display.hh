@@ -24,26 +24,33 @@ public:
 		cursor_pos = pos;
 	}
 
-	// sample should range from -1 to +1
-	float max = 0;
 	void draw_sample(float sample) {
 		sample = std::clamp(sample, -1.f, 1.f);
-		max = std::max(std::abs(max), std::abs(sample)) * ((sample < 0) ? -1 : 1);
+
+		oversample_min = std::min(oversample_min, sample);
+		oversample_max = std::max(oversample_max, sample);
+
 		if (++x_zoom_ctr > x_zoom) {
 			x_zoom_ctr = 0;
-			auto t = newest_sample.load();
 
-			if (++t >= (int)samples.size())
-				t = 0;
-			samples[t] = max;
-			max = 0;
+			{
+				auto t = newest_sample.load();
 
-			newest_sample.store(t);
+				if (++t >= (int)samples.size())
+					t = 0;
+
+				samples[t] = {oversample_min, oversample_max};
+
+				newest_sample.store(t);
+			}
+
+			oversample_min = 1.f;
+			oversample_max = -1.f;
 		}
 	}
 
 	void sync() {
-		std::ranges::fill(samples, 0);
+		std::ranges::fill(samples, std::pair<float, float>{0, 0});
 		newest_sample = 0;
 	}
 
@@ -100,9 +107,6 @@ public:
 		scene->push(wave);
 
 		canvas->push(scene);
-
-		std::ranges::fill(samples, 0);
-		newest_sample = 0;
 	}
 
 	bool draw_graphic_display() {
@@ -116,23 +120,32 @@ public:
 		wave->reset();
 
 		//start with the oldest sample
-		int i = newest_sample.load() + 1;
+		int start = newest_sample.load() + 1;
 
+		// Draw top contour left->right
+		int i = start;
 		for (auto x = 0u; x < samples.size(); x++) {
 			float x_pos = (float)x * display_width / (float)samples.size();
-			float y_pos = samples[i] * wave_height + wave_height;
+			float y_pos = samples[i].first * wave_height + wave_height;
 			if (x == 0)
 				wave->moveTo(x_pos, y_pos);
-			else {
+			else
 				wave->lineTo(x_pos, y_pos);
-				// Fill the waveform with vertical lines:
-				// wave->lineTo(x_pos, wave_height);
-				// wave->lineTo(x_pos, y_pos);
-			}
 			i = (i + 1) % samples.size();
 		}
+
+		// Continue shape, drawing bottom contour right->left
+		for (int x = samples.size() - 1; x >= 0; x--) {
+			if (--i < 0)
+				i = samples.size() - 1;
+			float x_pos = (float)x * display_width / (float)samples.size();
+			float y_pos = samples[i].second * wave_height + wave_height;
+			wave->lineTo(x_pos, y_pos);
+		}
+
 		wave->strokeWidth(1.0f / scaling);
 		wave->strokeFill(wave_r, wave_g, wave_b, 0xFF);
+		wave->fill(wave_r, wave_g, wave_b, 0x7F);
 		wave->scale(scaling);
 
 		canvas->update(wave);
@@ -154,7 +167,7 @@ private:
 	tvg::Shape *bar_cursor = nullptr;
 	tvg::Shape *wave = nullptr;
 
-	std::vector<float> samples;
+	std::vector<std::pair<float, float>> samples;
 	std::atomic<int> newest_sample = 0;
 
 	float cursor_pos = 0;
@@ -170,6 +183,8 @@ private:
 	float scaling = 1;
 
 	std::span<uint32_t> buffer;
+	float oversample_max = 0;
+	float oversample_min = 0;
 
 	const float display_width;
 	const float display_height;
