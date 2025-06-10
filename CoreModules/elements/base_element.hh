@@ -88,9 +88,9 @@ struct Knob : Pot {
 };
 
 struct KnobSnapped : Knob {
-	constexpr static size_t MaxPosNames = 15;
+	constexpr static size_t MaxPosNames = 30;
 	unsigned num_pos = 0;
-	std::array<std::string_view, MaxPosNames> pos_names{};
+	std::array<const char *, MaxPosNames> pos_names{};
 };
 
 struct Slider : Pot {
