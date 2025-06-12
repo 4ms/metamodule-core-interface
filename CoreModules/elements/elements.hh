@@ -28,8 +28,8 @@ using Element = std::variant<NullElement,
 
 							 LatchingButton,
 
-							 // Encoder,
-							 // EncoderRGB,
+							 Encoder,
+							 EncoderRGB,
 
 							 JackInput,
 							 JackOutput,
