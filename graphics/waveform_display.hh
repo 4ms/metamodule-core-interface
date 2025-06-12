@@ -32,7 +32,6 @@ public:
 
 		x_zoom_ctr += x_zoom;
 		if (x_zoom_ctr > 1.f) {
-			// if (++x_zoom_ctr > x_zoom) {
 			x_zoom_ctr = 0;
 
 			{
