@@ -169,7 +169,65 @@ private:
 	size_t num_chans = 0;
 };
 
+////////////
 // Helper class for using AudioResampler
+
+template<size_t MaxResampleRatio>
+class ResamplingInterleaved {
+	static constexpr size_t MaxChans = 2;
+
+public:
+	// Returns one resampled sample value.
+	// get_next_input() must return interleaved floats
+	// Will call get_next_input() when necessary.
+	std::pair<float, float> pop(auto get_next_input) {
+
+		if (out_buff.size() < num_chans) {
+			// Fill in_buff up
+			while (in_buff.push_back(get_next_input()))
+				;
+
+			unsigned output_size = 0;
+			auto output = std::span<float>{out_buff.begin(), out_buff.max_size()};
+
+			for (auto chan = 0u; chan < num_chans; chan++) {
+				output_size = core.process(chan, in_buff, output);
+				printf("chan %u, Rs %zu samples\n", chan, output_size);
+			}
+
+			out_buff.resize(output_size + num_chans);
+		}
+
+		auto left = out_buff.pop_back();
+		auto right = (num_chans == 2) ? out_buff.pop_back() : left;
+		return {left, right};
+	}
+
+	void set_num_channels(unsigned num_chans) {
+		core.set_input_stride(num_chans);
+		core.set_output_stride(num_chans);
+		this->num_chans = std::clamp<unsigned>(num_chans, 1u, MaxChans);
+	}
+
+	void set_samplerate_in_out(uint32_t input_rate, uint32_t output_rate) {
+		core.set_sample_rate_in_out(input_rate, output_rate);
+	}
+
+	void flush() {
+		core.flush();
+		in_buff.clear();
+		out_buff.clear();
+	}
+
+private:
+	Resampler core{MaxChans};
+	FixedVector<float, MaxChans * MaxResampleRatio> in_buff;
+	FixedVector<float, MaxChans * MaxResampleRatio> out_buff;
+	unsigned num_chans = 2;
+};
+
+////////////////////////////////////////////////
+
 template<size_t MaxChans, size_t MaxBlockSize, size_t MaxResampleRatio>
 class ResamplingInterleavedBuffer {
 public:
