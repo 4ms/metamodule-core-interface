@@ -100,7 +100,19 @@ public:
 		frac_pos += ratio;
 	}
 
-	float process(auto get_input) {
+	std::pair<float, float> process_stereo(auto get_input) {
+		// pre-condition: num_chans <= 2
+		float output[2];
+		process(get_input, output);
+
+		// For mono samples, copy left channel to right channel
+		if (num_chans == 1)
+			output[1] = output[0];
+
+		return {output[0], output[1]};
+	}
+
+	float process_mono(auto get_input) {
 		float output[1];
 		process(get_input, output);
 		return output[0];
