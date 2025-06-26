@@ -70,6 +70,10 @@ public:
 		bar_b = b;
 	}
 
+	void set_cursor_width(unsigned width) {
+		cursor_width = width;
+	}
+
 	// Functions below here run in the GUI thread and may get interrupted by the functions above
 
 	void show_graphic_display(std::span<uint32_t> pix_buffer, unsigned width, lv_obj_t *lvgl_canvas) {
